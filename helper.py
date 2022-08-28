@@ -7,9 +7,9 @@ from config import load_env
 
 load_env()
 
-DOWNLOAD_PATH = os.environ.get("DOWNLOAD_PATH")
-CONVERTED_PATH = os.environ.get("CONVERTED_PATH")
-VIDEOS_TEXT_FILE = os.environ.get("VIDEOS_TEXT_FILE")
+DOWNLOAD_PATH = os.environ.get("DOWNLOAD_PATH", "download")
+CONVERTED_PATH = os.environ.get("CONVERTED_PATH", "converted")
+VIDEOS_TEXT_FILE = os.environ.get("VIDEOS_TEXT_FILE", "example.txt")
 
 
 def get_downloaded_videos() -> list[str]:
@@ -23,7 +23,7 @@ def delete_file(file_name: str) -> None:
 
 
 def convert_to_url(line: str) -> str:
-    if not line.startswith("http://") or not line.startswith("https://"):
+    if not line.startswith("http://") and not line.startswith("https://"):
         line = f"https://{line}"
 
     return line
@@ -49,7 +49,7 @@ def remove_already_proceeded_videos(video_list: list[str], directory_path: str) 
     return fixed_videos_list
 
 
-def get_file_name_and_response(video_url: str) -> tuple[str, bytes]:
+def get_file_name_and_response(video_url: str) -> tuple[str, Response]:
     file_name = video_url.split("/")[-1]
     response = requests.get(video_url, stream=True)
 
