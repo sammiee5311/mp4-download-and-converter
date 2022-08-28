@@ -23,6 +23,7 @@ def cli():
 
 @click.command("download")
 def download_videos() -> None:
+    """ download all the urls in the text file. """
     video_urls_from_text_file = get_all_video_urls_from_text_file()
 
     video_urls = remove_already_proceeded_videos(
@@ -44,6 +45,7 @@ def download_videos() -> None:
 
 @click.command("convert")
 def convert_videos() -> None:
+    """ convert all the downloaded videos from mp4 to mp3. """
     downloaded_videos = get_downloaded_videos()
     video_files = remove_already_proceeded_videos(
         downloaded_videos, CONVERTED_PATH)
@@ -63,6 +65,7 @@ def convert_videos() -> None:
 
 @click.command("together")
 def download_and_covert():
+    """ download all the urls and convert all the downloaded videos. """
     video_urls_from_text_file = get_all_video_urls_from_text_file()
 
     video_urls = remove_already_proceeded_videos(
