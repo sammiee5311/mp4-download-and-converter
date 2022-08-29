@@ -1,6 +1,7 @@
 import os
 import requests
 import ffmpeg
+import validators
 from requests import Response
 
 from config import load_env
@@ -26,13 +27,15 @@ def convert_to_url(line: str) -> str:
     if not line.startswith("http://") and not line.startswith("https://"):
         line = f"https://{line}"
 
+    if not validators.url(line):
+        raise Exception("URL is not correct.")
+
     return line
 
 
 def get_all_video_urls_from_text_file() -> list[str]:
     with open(VIDEOS_TEXT_FILE, "r") as file:
-        video_urls = [
-            f"{convert_to_url(line.strip())}" for line in file.readlines()]
+        video_urls = [f"{convert_to_url(line.strip())}" for line in file.readlines()]
 
     return video_urls
 
@@ -66,8 +69,7 @@ def save_video(file_name: str, response: Response) -> None:
 
 def convert_mp4_to_mp3(file_name: str):
     input_file_path = os.path.join(DOWNLOAD_PATH, file_name)
-    output_file_path = os.path.join(
-        CONVERTED_PATH, file_name.replace("mp4", "mp3"))
+    output_file_path = os.path.join(CONVERTED_PATH, file_name.replace("mp4", "mp3"))
 
     video = ffmpeg.input(input_file_path)
     audio = ffmpeg.output(video.audio, output_file_path)

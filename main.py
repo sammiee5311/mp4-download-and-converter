@@ -8,12 +8,12 @@ from helper import (
     get_downloaded_videos,
     get_file_name_and_response,
     delete_file,
-    convert_mp4_to_mp3
+    convert_mp4_to_mp3,
 )
 
 
-DOWNLOAD_PATH = os.environ.get("DOWNLOAD_PATH")
-CONVERTED_PATH = os.environ.get("CONVERTED_PATH")
+DOWNLOAD_PATH = os.environ.get("DOWNLOAD_PATH", "download")
+CONVERTED_PATH = os.environ.get("CONVERTED_PATH", "convert")
 
 
 @click.group()
@@ -23,17 +23,15 @@ def cli():
 
 @click.command("download")
 def download_videos() -> None:
-    """ download all the urls in the text file. """
+    """download all the urls in the text file."""
     video_urls_from_text_file = get_all_video_urls_from_text_file()
 
-    video_urls = remove_already_proceeded_videos(
-        video_urls_from_text_file, DOWNLOAD_PATH)
+    video_urls = remove_already_proceeded_videos(video_urls_from_text_file, DOWNLOAD_PATH)
     number_of_videos = len(video_urls)
 
     try:
         for idx, video_url in enumerate(video_urls):
-            print(
-                f"Proceeding {video_url!r} ({idx + 1}/{number_of_videos})...")
+            print(f"Proceeding {video_url!r} ({idx + 1}/{number_of_videos})...")
             file_name, response = get_file_name_and_response(video_url)
             save_video(file_name, response)
 
@@ -45,16 +43,14 @@ def download_videos() -> None:
 
 @click.command("convert")
 def convert_videos() -> None:
-    """ convert all the downloaded videos from mp4 to mp3. """
+    """convert all the downloaded videos from mp4 to mp3."""
     downloaded_videos = get_downloaded_videos()
-    video_files = remove_already_proceeded_videos(
-        downloaded_videos, CONVERTED_PATH)
+    video_files = remove_already_proceeded_videos(downloaded_videos, CONVERTED_PATH)
     number_of_videos = len(video_files)
 
     try:
         for idx, video_file in enumerate(video_files):
-            print(
-                f"Proceeding {video_file!r} ({idx + 1}/{number_of_videos})...")
+            print(f"Proceeding {video_file!r} ({idx + 1}/{number_of_videos})...")
             convert_mp4_to_mp3(video_file)
 
         print("All done !")
@@ -65,17 +61,15 @@ def convert_videos() -> None:
 
 @click.command("together")
 def download_and_covert():
-    """ download all the urls and convert all the downloaded videos. """
+    """download all the urls and convert all the downloaded videos."""
     video_urls_from_text_file = get_all_video_urls_from_text_file()
 
-    video_urls = remove_already_proceeded_videos(
-        video_urls_from_text_file, DOWNLOAD_PATH)
+    video_urls = remove_already_proceeded_videos(video_urls_from_text_file, DOWNLOAD_PATH)
     number_of_videos = len(video_urls)
 
     try:
         for idx, video_url in enumerate(video_urls):
-            print(
-                f"Proceeding {video_url!r} ({idx + 1}/{number_of_videos})...")
+            print(f"Proceeding {video_url!r} ({idx + 1}/{number_of_videos})...")
             file_name, response = get_file_name_and_response(video_url)
             save_video(file_name, response)
             convert_mp4_to_mp3(file_name)

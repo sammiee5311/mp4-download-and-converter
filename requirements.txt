@@ -1,4 +1,10 @@
 requests
 ffmpeg-python
 python-dotenv
+black
+pytest
+pytest-cov
+pytest-env
+mypy
+validators
 click
