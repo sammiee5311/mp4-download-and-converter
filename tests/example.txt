@@ -1,0 +1,3 @@
+example.com/a.mp4
+http://example.com/b.mp4
+https://example.com/c.mp4
