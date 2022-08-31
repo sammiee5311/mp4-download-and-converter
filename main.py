@@ -1,3 +1,7 @@
+""" mp4-download-and-converter """
+
+__version__ = "0.0.1"
+
 import click
 import os
 
