@@ -13,7 +13,9 @@ download all the `mp4` videos from urls and convert from `mp4` to `mp3`.
     - `DOWNLOAD_PATH` is a directory where you want to download to.
     - `CONVERTED_PATH` is a directory where you want to save converted videos to.
     - `VIDEOS_TEXT_FILE` is a text file with urls that you want to download.
-- use `make all` to create venv and install dependencies (if your os is mac os).
+- create python venv and install dependencies
+    - use `make all` to create venv and install dependencies (if your os is mac os).
+    - or create virtual python3.10 environment and download dependencies (`pip install -r requirements.txt`).
 - use `convert`, `download` or `together` command with `python main.py`
     - example : `python main.py convert`
 
@@ -24,3 +26,7 @@ download all the `mp4` videos from urls and convert from `mp4` to `mp3`.
     - convert all the downloaded videos from `mp4` to `mp3`.
 - together
     - download all the urls and convert all the downloaded videos.
+
+## future plans
+- [ ] download and convert with url argument via terminal command.
+- [ ] add more convert options.
