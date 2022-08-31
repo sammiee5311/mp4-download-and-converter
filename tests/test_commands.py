@@ -20,9 +20,9 @@ def test_download() -> None:
 
         downloaded_files.append(file_name)
 
-    test_download_files = [file.split("/")[-1] for file in get_test_files()]
+    test_download_files = [file.split("/")[-1] for file in get_test_files() if file.split("/")[-1] != ".gitkeep"]
 
-    assert test_download_files == downloaded_files
+    assert sorted(test_download_files) == sorted(downloaded_files)
 
 
 def test_convert() -> None:
