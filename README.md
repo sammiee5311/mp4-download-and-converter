@@ -16,7 +16,7 @@ download all the `mp4` videos from urls and convert from `mp4` to `mp3`.
 - create python venv and install dependencies
     - use `make all` to create venv and install dependencies (if your os is mac os).
     - or create virtual python3.10 environment and download dependencies (`pip install -r requirements.txt`).
-- use `convert`, `download` or `together` command with `python main.py`
+- use `convert`, `download`, `together` or `one` command with `python main.py`
     - example : `python main.py convert`
 
 ## command
@@ -26,7 +26,12 @@ download all the `mp4` videos from urls and convert from `mp4` to `mp3`.
     - convert all the downloaded videos from `mp4` to `mp3`.
 - together
     - download all the urls and convert all the downloaded videos.
+- one
+    - argument:
+        - `--url <video url>` 
+            - ex) `python main.py one --url example.com/example.mp4`
+    - download vid from url argument and convert the downloaded video.
 
 ## future plans
-- [ ] download and convert with url argument via terminal command.
+- [x] download and convert with url argument via terminal command.
 - [ ] add more convert options.

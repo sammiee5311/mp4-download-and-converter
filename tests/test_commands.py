@@ -40,3 +40,21 @@ def test_convert() -> None:
     test_converted_files = [file.split("/")[-1] for file in get_converted_files() if file.split("/")[-1] != ".gitkeep"]
 
     assert sorted(test_converted_files) == sorted(converted_files)
+
+
+def test_one() -> None:
+    video_url = get_all_video_urls_from_text_file()[0]
+
+    file_name = video_url.split("/")[-1]
+    save_video(DOWNLOAD_PATH, file_name)
+
+    test_download_files = [file.split("/")[-1] for file in get_test_files() if file.split("/")[-1] != ".gitkeep"]
+
+    assert file_name in test_download_files
+
+    convert_mp4_to_mp3(file_name)
+    file_name = file_name.replace("mp4", "mp3")
+
+    test_converted_files = [file.split("/")[-1] for file in get_converted_files() if file.split("/")[-1] != ".gitkeep"]
+
+    assert file_name in test_converted_files

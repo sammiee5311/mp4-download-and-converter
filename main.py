@@ -13,6 +13,7 @@ from helper import (
     get_file_name_and_response,
     delete_file,
     convert_mp4_to_mp3,
+    convert_to_url,
 )
 
 
@@ -64,7 +65,7 @@ def convert_videos() -> None:
 
 
 @click.command("together")
-def download_and_covert():
+def download_and_covert() -> None:
     """download all the urls and convert all the downloaded videos."""
     video_urls_from_text_file = get_all_video_urls_from_text_file()
 
@@ -85,8 +86,28 @@ def download_and_covert():
         delete_file(os.path.join(CONVERTED_PATH, file_name))
 
 
+@click.command("one")
+@click.option("--url", help="video url")
+def download_and_covert_from_url_argument(url: str) -> None:
+    """download vid from url argument and convert the downloaded video."""
+    video_url = convert_to_url(url)
+
+    try:
+        print(f"Proceeding {video_url!r}...")
+        file_name, response = get_file_name_and_response(video_url)
+        save_video(file_name, response)
+        convert_mp4_to_mp3(file_name)
+
+        print("All done !")
+    except Exception:
+        print(f"An error is occurred with {file_name!r} file.")
+        delete_file(os.path.join(DOWNLOAD_PATH, file_name))
+        delete_file(os.path.join(CONVERTED_PATH, file_name))
+
+
 if __name__ == "__main__":
     cli.add_command(download_videos)
     cli.add_command(convert_videos)
     cli.add_command(download_and_covert)
+    cli.add_command(download_and_covert_from_url_argument)
     cli()
