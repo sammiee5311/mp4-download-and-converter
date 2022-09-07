@@ -52,11 +52,8 @@ def remove_already_proceeded_videos(video_list: list[str], directory_path: str) 
     return fixed_videos_list
 
 
-def get_file_name_and_response(video_url: str) -> tuple[str, Response]:
-    file_name = video_url.split("/")[-1]
-    response = requests.get(video_url, stream=True)
-
-    return file_name, response
+def get_response(video_url: str) -> Response:
+    return requests.get(video_url, stream=True)
 
 
 def save_video(file_name: str, response: Response) -> None:

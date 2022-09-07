@@ -10,7 +10,7 @@ from helper import (
     remove_already_proceeded_videos,
     save_video,
     get_downloaded_videos,
-    get_file_name_and_response,
+    get_response,
     delete_file,
     convert_mp4_to_mp3,
     convert_to_url,
@@ -37,7 +37,8 @@ def download_videos() -> None:
     try:
         for idx, video_url in enumerate(video_urls):
             print(f"Proceeding {video_url!r} ({idx + 1}/{number_of_videos})...")
-            file_name, response = get_file_name_and_response(video_url)
+            file_name = video_url.split("/")[-1]
+            response = get_response(video_url)
             save_video(file_name, response)
 
         print("All done !")
@@ -75,7 +76,8 @@ def download_and_covert() -> None:
     try:
         for idx, video_url in enumerate(video_urls):
             print(f"Proceeding {video_url!r} ({idx + 1}/{number_of_videos})...")
-            file_name, response = get_file_name_and_response(video_url)
+            file_name = video_url.split("/")[-1]
+            response = get_response(video_url)
             save_video(file_name, response)
             convert_mp4_to_mp3(file_name)
 
@@ -94,7 +96,8 @@ def download_and_covert_from_url_argument(url: str) -> None:
 
     try:
         print(f"Proceeding {video_url!r}...")
-        file_name, response = get_file_name_and_response(video_url)
+        file_name = video_url.split("/")[-1]
+        response = get_response(video_url)
         save_video(file_name, response)
         convert_mp4_to_mp3(file_name)
 
