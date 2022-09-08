@@ -9,3 +9,4 @@ mypy
 tox
 validators
 click
+requests-mock
