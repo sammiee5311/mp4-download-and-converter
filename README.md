@@ -23,13 +23,24 @@ download all the `mp4` videos from urls and convert from `mp4` to `mp3`.
 - download
     - download all the urls in the text file.
 - convert
+    - argument:
+        - `--overwrite/--no-overwrite`
+            - ex) `python main.py convert --no-overwrite`
+            - overwrite already converted videos (default: True)
     - convert all the downloaded videos from `mp4` to `mp3`.
 - together
+    - argument:
+        - `--overwrite/--no-overwrite`
+            - ex) `python main.py together --no-overwrite`
+            - overwrite already converted videos (default: True)
     - download all the urls and convert all the downloaded videos.
 - one
     - argument:
-        - `--url <video url>` 
+        - `--url <video url>`
             - ex) `python main.py one --url example.com/example.mp4`
+        - `--overwrite/--no-overwrite`
+            - ex) `python main.py one --no-overwrite`
+            - overwrite already converted videos (default: True)
     - download vid from url argument and convert the downloaded video.
 
 ## future plans

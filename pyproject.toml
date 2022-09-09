@@ -29,7 +29,8 @@ test = [
   "pytest-cov",
   "pytest-env",
   "mypy",
-  "tox"
+  "tox",
+  "requests-mock",
 ]
 
 [tool.black]

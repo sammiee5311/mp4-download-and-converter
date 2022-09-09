@@ -17,6 +17,10 @@ def get_downloaded_videos() -> list[str]:
     return os.listdir(DOWNLOAD_PATH)
 
 
+def get_converted_videos() -> list[str]:
+    return os.listdir(CONVERTED_PATH)
+
+
 def delete_file(file_name: str) -> None:
     if os.path.exists(file_name):
         print(f"Deleting {file_name!r}...")
@@ -64,9 +68,14 @@ def save_video(file_name: str, response: Response) -> None:
                 file.write(chunk)
 
 
-def convert_mp4_to_mp3(file_name: str):
+def convert_mp4_to_mp3(file_name: str, overwrite: bool):
+    output_file = file_name.replace("mp4", "mp3")
+
+    if not overwrite and output_file in get_converted_videos():
+        return
+
     input_file_path = os.path.join(DOWNLOAD_PATH, file_name)
-    output_file_path = os.path.join(CONVERTED_PATH, file_name.replace("mp4", "mp3"))
+    output_file_path = os.path.join(CONVERTED_PATH, output_file)
 
     video = ffmpeg.input(input_file_path)
     audio = ffmpeg.output(video.audio, output_file_path)
