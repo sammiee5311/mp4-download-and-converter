@@ -7,16 +7,26 @@ download all the `mp4` videos from urls and convert from `mp4` to `mp3`.
 - ffmpeg
 
 ## how to use
-- download [`ffmpeg`](https://ffmpeg.org/).
+1. download [`ffmpeg`](https://ffmpeg.org/).
     - (if you are using homebrew, use following command in terminal `brew install ffmpeg`.)
-- type environment variables in `.env` file.
+2. type environment variables in `.env` file.
     - `DOWNLOAD_PATH` is a directory where you want to download to.
     - `CONVERTED_PATH` is a directory where you want to save converted videos to.
     - `VIDEOS_TEXT_FILE` is a text file with urls that you want to download.
-- create python venv and install dependencies
-    - use `make all` to create venv and install dependencies (if your os is mac os).
-    - or create virtual python3.10 environment and download dependencies (`pip install -r requirements.txt`).
-- use `convert`, `download`, `together` or `one` command with `python main.py`
+3. create python venv and install dependencies
+    1. create virtual python3.10 environment
+        - `python3.10 -m venv venv`
+        - or `virtualenv venv -ppy310` (if you have installed virtualenv)
+    2. download dependencies
+        - `pip install -r requirements.txt`
+4. activate python venv
+    - mac
+        - `source venv/bin/activate`
+    - window
+        - `./venv/Script/activate`
+    - linux
+        - `. venv/bin/activate`
+5. use `convert`, `download`, `together` or `one` command with `python main.py`
     - example : `python main.py convert`
 
 ## command
