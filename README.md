@@ -13,12 +13,9 @@ download all the `mp4` videos from urls and convert from `mp4` to `mp3`.
     - `DOWNLOAD_PATH` is a directory where you want to download to.
     - `CONVERTED_PATH` is a directory where you want to save converted videos to.
     - `VIDEOS_TEXT_FILE` is a text file with urls that you want to download.
-3. create python venv and install dependencies
-    1. create virtual python3.10 environment
-        - `python3.10 -m venv venv`
-        - or `virtualenv venv -ppy310` (if you have installed virtualenv)
-    2. download dependencies
-        - `pip install -r requirements.txt`
+3. create virtual python3.10 environment
+    - `python3.10 -m venv venv`
+    - or `virtualenv venv -ppy310` (if you have installed virtualenv)
 4. activate python venv
     - mac
         - `source venv/bin/activate`
@@ -26,7 +23,9 @@ download all the `mp4` videos from urls and convert from `mp4` to `mp3`.
         - `./venv/Script/activate`
     - linux
         - `. venv/bin/activate`
-5. use `convert`, `download`, `together` or `one` command with `python main.py`
+5. install dependencies
+    - `pip install -r requirements.txt`
+6. use `convert`, `download`, `together` or `one` command with `python main.py`
     - example : `python main.py convert`
 
 ## command
