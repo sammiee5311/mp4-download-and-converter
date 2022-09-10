@@ -10,3 +10,4 @@ tox
 validators
 click
 requests-mock
+mock

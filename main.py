@@ -106,6 +106,10 @@ def download_and_covert(overwrite: bool) -> None:
 @click.option("--overwrite/--no-overwrite", default=True, show_default=True, help="overwrite converted videos")
 def download_and_covert_from_url_argument(url: str, overwrite: bool) -> None:
     """download vid from url argument and convert the downloaded video."""
+    if not url:
+        print("Please, provide a url that you want to download.")
+        return
+
     video_url = convert_to_url(url)
 
     try:
