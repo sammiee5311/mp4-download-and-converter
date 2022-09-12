@@ -1,9 +1,10 @@
 # mp4 download and converter
+[![CI](https://github.com/sammiee5311/mp4-download-and-converter/actions/workflows/CI.yaml/badge.svg)](https://github.com/sammiee5311/mp4-download-and-converter/actions/workflows/CI.yaml) [![python](./python-version.svg)]()
 
 download all the `mp4` videos from urls and convert from `mp4` to `mp3`.
 
 ## prerequisites
-- <= python 3.10
+- <= python 3.7
 - ffmpeg
 
 ## how to use
@@ -13,9 +14,9 @@ download all the `mp4` videos from urls and convert from `mp4` to `mp3`.
     - `DOWNLOAD_PATH` is a directory where you want to download to.
     - `CONVERTED_PATH` is a directory where you want to save converted videos to.
     - `VIDEOS_TEXT_FILE` is a text file with urls that you want to download.
-3. create virtual python3.10 environment
-    - `python3.10 -m venv venv`
-    - or `virtualenv venv -ppy310` (if you have installed virtualenv)
+3. create virtual python environment
+    - `python -m venv venv`
+    - or `virtualenv venv -ppy< python version(ex, 310) >` (if you have installed virtualenv)
 4. activate python venv
     - mac
         - `source venv/bin/activate`
