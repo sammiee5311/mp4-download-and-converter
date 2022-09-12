@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 import requests
 import ffmpeg
@@ -39,7 +41,8 @@ def convert_to_url(line: str) -> str:
 
 def get_all_video_urls_from_text_file() -> list[str]:
     with open(VIDEOS_TEXT_FILE, "r") as file:
-        video_urls = [f"{convert_to_url(line.strip())}" for line in file.readlines()]
+        video_urls = [
+            f"{convert_to_url(line.strip())}" for line in file.readlines()]
 
     return video_urls
 
