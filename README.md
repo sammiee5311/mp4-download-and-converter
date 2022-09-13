@@ -21,7 +21,7 @@ download all the `mp4` videos from urls and convert from `mp4` to `mp3`.
     - mac
         - `source venv/bin/activate`
     - window
-        - `./venv/Script/activate`
+        - `./venv/Scripts/activate`
     - linux
         - `. venv/bin/activate`
 5. install dependencies
