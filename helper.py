@@ -5,6 +5,7 @@ import requests
 import ffmpeg
 import validators
 from requests import Response
+from tqdm import tqdm
 
 from config import load_env
 
@@ -41,8 +42,7 @@ def convert_to_url(line: str) -> str:
 
 def get_all_video_urls_from_text_file() -> list[str]:
     with open(VIDEOS_TEXT_FILE, "r") as file:
-        video_urls = [
-            f"{convert_to_url(line.strip())}" for line in file.readlines()]
+        video_urls = [f"{convert_to_url(line.strip())}" for line in file.readlines()]
 
     return video_urls
 
@@ -65,8 +65,13 @@ def get_response(video_url: str) -> Response:
 
 def save_video(file_name: str, response: Response) -> None:
     output_file_path = os.path.join(DOWNLOAD_PATH, file_name)
+    size = int(response.headers.get("Content-Length", "0"))
+    progress_bar = tqdm(total=size)
+    chunk_size = 10_000
+
     with open(output_file_path, "wb") as file:
-        for chunk in response.iter_content(10000):
+        for chunk in response.iter_content(chunk_size):
+            progress_bar.update(chunk_size)
             if chunk:
                 file.write(chunk)
 

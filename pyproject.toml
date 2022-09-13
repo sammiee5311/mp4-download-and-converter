@@ -19,7 +19,8 @@ dependencies = [
   "requests",
   "ffmpeg-python",
   "validators",
-  "click"
+  "click",
+  "tqdm"
 ]
 
 [project.optional-dependencies]

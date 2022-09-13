@@ -55,4 +55,5 @@ download all the `mp4` videos from urls and convert from `mp4` to `mp3`.
 
 ## future plans
 - [x] download and convert with url argument via terminal command.
+- [x] add a progress bar to show status of downloading videos.
 - [ ] add more convert options.
