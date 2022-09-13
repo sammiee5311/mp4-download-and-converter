@@ -76,7 +76,7 @@ def save_video(file_name: str, response: Response) -> None:
                 file.write(chunk)
 
 
-def convert_mp4_to_mp3(file_name: str, overwrite: bool):
+def convert_mp4_to_mp3(file_name: str, overwrite: bool):  # pragma: no cover
     output_file = file_name.replace("mp4", "mp3")
 
     if not overwrite and output_file in get_converted_videos():

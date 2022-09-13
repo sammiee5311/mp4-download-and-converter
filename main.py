@@ -130,7 +130,7 @@ def download_and_covert_from_url_argument(url: str, overwrite: bool) -> None:
         delete_file(os.path.join(CONVERTED_PATH, file_name.replace("mp4", "mp3")))
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     cli.add_command(download_videos)
     cli.add_command(convert_videos)
     cli.add_command(download_and_covert)
