@@ -4,3 +4,4 @@ python-dotenv
 validators
 click
 tqdm
+mypy
