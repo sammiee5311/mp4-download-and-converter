@@ -3,6 +3,7 @@ from __future__ import annotations
 import pytest
 import os
 
+from typing import Generator
 from helper import delete_file
 
 DOWNLOAD_PATH = os.environ.get("DOWNLOAD_PATH", "download")
@@ -33,7 +34,7 @@ def convert_mp4_to_mp3(file_name: str, overwrite: bool) -> None:
 
 
 @pytest.fixture(scope="session", autouse=True)
-def clean_up():
+def clean_up() -> Generator[None, None, None]:
     yield
     for file in get_test_files():
         delete_file(file)

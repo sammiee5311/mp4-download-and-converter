@@ -8,6 +8,7 @@ from requests import Response
 from tqdm import tqdm
 
 from config import load_env
+from mp4_type import ExceptionArgs, RetryRetFunc, DecoratorFunc, InnerFunc, RetryKwArgs
 
 load_env()
 
@@ -76,7 +77,7 @@ def save_video(file_name: str, response: Response) -> None:
                 file.write(chunk)
 
 
-def convert_mp4_to_mp3(file_name: str, overwrite: bool):  # pragma: no cover
+def convert_mp4_to_mp3(file_name: str, overwrite: bool) -> None:  # pragma: no cover
     output_file = file_name.replace("mp4", "mp3")
 
     if not overwrite and output_file in get_converted_videos():
@@ -88,3 +89,21 @@ def convert_mp4_to_mp3(file_name: str, overwrite: bool):  # pragma: no cover
     video = ffmpeg.input(input_file_path)
     audio = ffmpeg.output(video.audio, output_file_path)
     ffmpeg.run(audio, overwrite_output=True)
+
+
+def retry(exceptions: ExceptionArgs, times: int = 0) -> RetryRetFunc:
+    def decorator(func: DecoratorFunc) -> InnerFunc:
+        def innerfunc(**kwargs: RetryKwArgs) -> None:
+            attempt = 0
+            while attempt < times:
+                try:
+                    return func(**kwargs)  # type: ignore
+                except exceptions:  # type: ignore
+                    print(f"Exception thrown when attemping to run {func}, attempt {attempt} of {times}")
+
+                    attempt += 1
+            return func(**kwargs)  # type: ignore
+
+        return innerfunc  # type: ignore
+
+    return decorator

@@ -22,7 +22,7 @@ CONVERTED_PATH = os.environ.get("CONVERTED_PATH", "converted")
 
 
 @click.group()
-def cli():
+def cli() -> None:
     """Download and Convert"""
 
 
