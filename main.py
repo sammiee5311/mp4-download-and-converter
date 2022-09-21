@@ -52,7 +52,8 @@ def download_videos() -> None:
 
 @click.command("convert")
 @click.option("--overwrite/--no-overwrite", default=True, show_default=True, help="overwrite converted videos")
-def convert_videos(overwrite: bool) -> None:
+@click.option("--quiet/--no-quiet", default=True, show_default=True, help="show ffmpg output log")
+def convert_videos(overwrite: bool, quiet: bool) -> None:
     """convert all the downloaded videos from mp4 to mp3."""
     downloaded_videos = get_downloaded_videos()
 
@@ -62,7 +63,7 @@ def convert_videos(overwrite: bool) -> None:
     try:
         for idx, video_file in enumerate(video_files):
             print(f"Proceeding {video_file!r} ({idx + 1}/{number_of_videos})...")
-            convert_mp4_to_mp3(video_file, overwrite)
+            convert_mp4_to_mp3(video_file, overwrite, quiet)
 
         print("All done !")
     except Exception:
@@ -75,7 +76,8 @@ def convert_videos(overwrite: bool) -> None:
 
 @click.command("together")
 @click.option("--overwrite/--no-overwrite", default=True, show_default=True, help="overwrite converted videos")
-def download_and_covert(overwrite: bool) -> None:
+@click.option("--quiet/--no-quiet", default=True, show_default=True, help="show ffmpg output log")
+def download_and_covert(overwrite: bool, quiet: bool) -> None:
     """download all the urls and convert all the downloaded videos."""
     video_urls_from_text_file = get_all_video_urls_from_text_file()
 
@@ -88,7 +90,7 @@ def download_and_covert(overwrite: bool) -> None:
             file_name = video_url.split("/")[-1]
             response = get_response(video_url)
             save_video(file_name, response)
-            convert_mp4_to_mp3(file_name, overwrite)
+            convert_mp4_to_mp3(file_name, overwrite, quiet)
 
         print("All done !")
     except Exception:
@@ -104,7 +106,8 @@ def download_and_covert(overwrite: bool) -> None:
 @click.command("one")
 @click.option("--url", help="video url")
 @click.option("--overwrite/--no-overwrite", default=True, show_default=True, help="overwrite converted videos")
-def download_and_covert_from_url_argument(url: str, overwrite: bool) -> None:
+@click.option("--quiet/--no-quiet", default=True, show_default=True, help="show ffmpg output log")
+def download_and_covert_from_url_argument(url: str, overwrite: bool, quiet: bool) -> None:
     """download vid from url argument and convert the downloaded video."""
     if not url:
         print("Please, provide a url that you want to download.")
@@ -117,7 +120,7 @@ def download_and_covert_from_url_argument(url: str, overwrite: bool) -> None:
         file_name = video_url.split("/")[-1]
         response = get_response(video_url)
         save_video(file_name, response)
-        convert_mp4_to_mp3(file_name, overwrite)
+        convert_mp4_to_mp3(file_name, overwrite, quiet)
 
         print("All done !")
     except Exception:

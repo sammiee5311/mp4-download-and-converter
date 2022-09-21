@@ -77,7 +77,7 @@ def save_video(file_name: str, response: Response) -> None:
                 file.write(chunk)
 
 
-def convert_mp4_to_mp3(file_name: str, overwrite: bool) -> None:  # pragma: no cover
+def convert_mp4_to_mp3(file_name: str, overwrite: bool, quiet: bool) -> None:  # pragma: no cover
     output_file = file_name.replace("mp4", "mp3")
 
     if not overwrite and output_file in get_converted_videos():
@@ -88,7 +88,7 @@ def convert_mp4_to_mp3(file_name: str, overwrite: bool) -> None:  # pragma: no c
 
     video = ffmpeg.input(input_file_path)
     audio = ffmpeg.output(video.audio, output_file_path)
-    ffmpeg.run(audio, overwrite_output=True)
+    ffmpeg.run(audio, overwrite_output=True, quiet=quiet)
 
 
 def retry(exceptions: ExceptionArgs, times: int = 0) -> RetryRetFunc:

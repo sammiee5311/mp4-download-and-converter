@@ -15,11 +15,11 @@ class RetryKwArgs(TypedDict):
 
 
 DownloadFunc = Callable[[], None]
-ConvertFunc = Callable[[bool], None]
-DownloadConvertFunc = Callable[[str, bool], None]
+ConvertFunc = Callable[[bool, bool], None]
+DownloadConvertFunc = Callable[[str, bool, bool], None]
 
 InnerFunc = Callable[[RetryKwArgs], None]
 DecoratorFunc = Union[DownloadFunc, ConvertFunc, DownloadConvertFunc]
 RetryRetFunc = Callable[[DecoratorFunc], InnerFunc]
 
-ExceptionArgs = Union[Type[Exception], Sequence[Exception]]
+ExceptionArgs = Union[Type[BaseException], Sequence[BaseException]]

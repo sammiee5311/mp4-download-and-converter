@@ -22,7 +22,7 @@ def get_test_files() -> list[str]:
     return get_download_files() + get_converted_files()
 
 
-def convert_mp4_to_mp3(file_name: str, overwrite: bool) -> None:
+def convert_mp4_to_mp3(file_name: str, overwrite: bool, quite: bool) -> None:
     output_file = file_name.replace("mp4", "mp3")
     if not overwrite and output_file in get_converted_files():
         return
