@@ -85,17 +85,16 @@ def convert_mp4_to_mp3(file_name: str, overwrite: bool, quiet: bool) -> None:  #
 
     input_file_path = os.path.join(DOWNLOAD_PATH, file_name)
     output_file_path = os.path.join(CONVERTED_PATH, output_file)
-
     video = ffmpeg.input(input_file_path)
     audio = ffmpeg.output(video.audio, output_file_path)
     ffmpeg.run(audio, overwrite_output=True, quiet=quiet)
 
 
-def retry(exceptions: ExceptionArgs, times: int = 0) -> RetryRetFunc:
+def retry(exceptions: ExceptionArgs, times: int) -> RetryRetFunc:
     def decorator(func: DecoratorFunc) -> InnerFunc:
         def innerfunc(**kwargs: RetryKwArgs) -> None:
-            attempt = 0
-            while attempt < times:
+            attempt = 1
+            while attempt <= times:
                 try:
                     return func(**kwargs)  # type: ignore
                 except exceptions:  # type: ignore

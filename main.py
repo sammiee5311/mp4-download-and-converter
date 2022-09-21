@@ -1,9 +1,11 @@
 """ mp4-download-and-converter """
 
-__version__ = "0.0.1"
+__version__ = "0.0.8"
 
 import click
 import os
+
+from config import ReteyError
 
 from helper import (
     get_all_video_urls_from_text_file,
@@ -14,11 +16,13 @@ from helper import (
     delete_file,
     convert_mp4_to_mp3,
     convert_to_url,
+    retry,
 )
 
 
 DOWNLOAD_PATH = os.environ.get("DOWNLOAD_PATH", "download")
 CONVERTED_PATH = os.environ.get("CONVERTED_PATH", "converted")
+MAX_RETRY_TIMES = int(os.environ.get("MAX_RETRY_TIMES", 3))
 
 
 @click.group()
@@ -27,6 +31,7 @@ def cli() -> None:
 
 
 @click.command("download")
+@retry(exceptions=ReteyError, times=MAX_RETRY_TIMES)
 def download_videos() -> None:
     """download all the urls in the text file."""
     video_urls_from_text_file = get_all_video_urls_from_text_file()
@@ -42,9 +47,10 @@ def download_videos() -> None:
             save_video(file_name, response)
 
         print("All done !")
-    except Exception:
-        print(f"An error is occurred to download {file_name!r} file.")
+    except Exception as e:
         delete_file(os.path.join(DOWNLOAD_PATH, file_name))
+
+        raise ReteyError(f"An error is occurred to download {file_name!r} file. ({e})")
     except KeyboardInterrupt:
         print(f"Ctrl-C interrupted !")
         delete_file(os.path.join(DOWNLOAD_PATH, file_name))
@@ -53,6 +59,7 @@ def download_videos() -> None:
 @click.command("convert")
 @click.option("--overwrite/--no-overwrite", default=True, show_default=True, help="overwrite converted videos")
 @click.option("--quiet/--no-quiet", default=True, show_default=True, help="show ffmpg output log")
+@retry(exceptions=ReteyError, times=MAX_RETRY_TIMES)
 def convert_videos(overwrite: bool, quiet: bool) -> None:
     """convert all the downloaded videos from mp4 to mp3."""
     downloaded_videos = get_downloaded_videos()
@@ -66,9 +73,10 @@ def convert_videos(overwrite: bool, quiet: bool) -> None:
             convert_mp4_to_mp3(video_file, overwrite, quiet)
 
         print("All done !")
-    except Exception:
-        print(f"An error is occurred to convert {video_file!r} file.")
+    except Exception as e:
         delete_file(os.path.join(CONVERTED_PATH, video_file.replace("mp4", "mp3")))
+
+        raise ReteyError(f"An error is occurred to convert {video_file!r} file. ({e})")
     except KeyboardInterrupt:
         print(f"Ctrl-C interrupted !")
         delete_file(os.path.join(CONVERTED_PATH, video_file.replace("mp4", "mp3")))
@@ -77,6 +85,7 @@ def convert_videos(overwrite: bool, quiet: bool) -> None:
 @click.command("together")
 @click.option("--overwrite/--no-overwrite", default=True, show_default=True, help="overwrite converted videos")
 @click.option("--quiet/--no-quiet", default=True, show_default=True, help="show ffmpg output log")
+@retry(exceptions=ReteyError, times=MAX_RETRY_TIMES)
 def download_and_covert(overwrite: bool, quiet: bool) -> None:
     """download all the urls and convert all the downloaded videos."""
     video_urls_from_text_file = get_all_video_urls_from_text_file()
@@ -93,10 +102,11 @@ def download_and_covert(overwrite: bool, quiet: bool) -> None:
             convert_mp4_to_mp3(file_name, overwrite, quiet)
 
         print("All done !")
-    except Exception:
-        print(f"An error is occurred with {file_name!r} file.")
+    except Exception as e:
         delete_file(os.path.join(DOWNLOAD_PATH, file_name))
         delete_file(os.path.join(CONVERTED_PATH, file_name.replace("mp4", "mp3")))
+
+        raise ReteyError(f"An error is occurred with {file_name!r} file. ({e})")
     except KeyboardInterrupt:
         print(f"Ctrl-C interrupted !")
         delete_file(os.path.join(DOWNLOAD_PATH, file_name))
@@ -107,6 +117,7 @@ def download_and_covert(overwrite: bool, quiet: bool) -> None:
 @click.option("--url", help="video url")
 @click.option("--overwrite/--no-overwrite", default=True, show_default=True, help="overwrite converted videos")
 @click.option("--quiet/--no-quiet", default=True, show_default=True, help="show ffmpg output log")
+@retry(exceptions=ReteyError, times=MAX_RETRY_TIMES)
 def download_and_covert_from_url_argument(url: str, overwrite: bool, quiet: bool) -> None:
     """download vid from url argument and convert the downloaded video."""
     if not url:
@@ -123,10 +134,11 @@ def download_and_covert_from_url_argument(url: str, overwrite: bool, quiet: bool
         convert_mp4_to_mp3(file_name, overwrite, quiet)
 
         print("All done !")
-    except Exception:
-        print(f"An error is occurred with {file_name!r} file.")
+    except Exception as e:
         delete_file(os.path.join(DOWNLOAD_PATH, file_name))
         delete_file(os.path.join(CONVERTED_PATH, file_name.replace("mp4", "mp3")))
+
+        raise ReteyError(f"An error is occurred with {file_name!r} file. ({e})")
     except KeyboardInterrupt:
         print(f"Ctrl-C interrupted !")
         delete_file(os.path.join(DOWNLOAD_PATH, file_name))

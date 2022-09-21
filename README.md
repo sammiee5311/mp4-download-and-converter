@@ -14,6 +14,7 @@ download all the `mp4` videos from urls and convert from `mp4` to `mp3`.
     - `DOWNLOAD_PATH` is a directory where you want to download to.
     - `CONVERTED_PATH` is a directory where you want to save converted videos to.
     - `VIDEOS_TEXT_FILE` is a text file with urls that you want to download.
+    - `MAX_RETRY_TIMES` is how many times you want to retry when it occurs an error.
 3. create virtual python environment
     - `python -m venv venv`
     - or `virtualenv venv -ppy< python version(ex, 310) >` (if you have installed virtualenv)
