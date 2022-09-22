@@ -4,18 +4,18 @@ import pytest
 import os
 
 from typing import Generator
-from helper import delete_file
+from helper import delete_file, is_valid_video_file
 
 DOWNLOAD_PATH = os.environ.get("DOWNLOAD_PATH", "download")
 CONVERTED_PATH = os.environ.get("CONVERTED_PATH", "converted")
 
 
 def get_download_files() -> list[str]:
-    return [f"{DOWNLOAD_PATH}/{file}" for file in os.listdir(DOWNLOAD_PATH) if file.split("/")[-1] != ".gitkeep"]
+    return [f"{DOWNLOAD_PATH}/{file}" for file in os.listdir(DOWNLOAD_PATH) if is_valid_video_file(file.split("/")[-1])]
 
 
 def get_converted_files() -> list[str]:
-    return [f"{CONVERTED_PATH}/{file}" for file in os.listdir(CONVERTED_PATH) if file.split("/")[-1] != ".gitkeep"]
+    return [f"{CONVERTED_PATH}/{file}" for file in os.listdir(CONVERTED_PATH) if file.split("/")[-1].split(".")[-1] == "mp3"]
 
 
 def get_test_files() -> list[str]:

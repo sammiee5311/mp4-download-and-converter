@@ -31,6 +31,10 @@ def delete_file(file_name: str) -> None:
         os.remove(file_name)
 
 
+def is_valid_video_file(file: str) -> bool:
+    return file.split(".")[-1] == "mp4"
+
+
 def convert_to_url(line: str) -> str:
     if not line.startswith("http://") and not line.startswith("https://"):
         line = f"https://{line}"
@@ -54,7 +58,7 @@ def remove_already_proceeded_videos(video_list: list[str], directory_path: str) 
 
     for video in video_list:
         video_name = video.split("/")[-1]
-        if video_name not in proceeded_videos:
+        if is_valid_video_file(video_name) and video_name not in proceeded_videos:
             fixed_videos_list.append(video)
 
     return fixed_videos_list
