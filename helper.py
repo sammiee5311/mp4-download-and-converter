@@ -9,6 +9,7 @@ from tqdm import tqdm
 
 from config import load_env
 from mp4_type import ExceptionArgs, RetryRetFunc, DecoratorFunc, InnerFunc, RetryKwArgs
+from logs.logging import logger
 
 load_env()
 
@@ -25,10 +26,14 @@ def get_converted_videos() -> list[str]:
     return os.listdir(CONVERTED_PATH)
 
 
-def delete_file(file_name: str) -> None:
-    if os.path.exists(file_name):
-        print(f"Deleting {file_name!r}...")
-        os.remove(file_name)
+def delete_file(file_path: str) -> None:
+    file_name = file_path.split("/")[-1]
+    current_state = "DOWNLOAD" if file_name[-3:] == "mp4" else "CONVERT"
+
+    if os.path.exists(file_path):
+        logger.warning(f"(%s) %s is failed to %s.", current_state, file_name, current_state.lower())
+        print(f"Deleting {file_path!r}...")
+        os.remove(file_path)
 
 
 def is_valid_video_file(file: str) -> bool:
@@ -80,6 +85,8 @@ def save_video(file_name: str, response: Response) -> None:
             if chunk:
                 file.write(chunk)
 
+    logger.info(f"(DOWNLOAD) %s is saved successfully.", file_name)
+
 
 def convert_mp4_to_mp3(file_name: str, overwrite: bool, quiet: bool) -> None:  # pragma: no cover
     output_file = file_name.replace("mp4", "mp3")
@@ -93,12 +100,14 @@ def convert_mp4_to_mp3(file_name: str, overwrite: bool, quiet: bool) -> None:  #
     audio = ffmpeg.output(video.audio, output_file_path)
     ffmpeg.run(audio, overwrite_output=True, quiet=quiet)
 
+    logger.info(f"(CONVERT) %s is converted successfully.", file_name)
+
 
 def retry(exceptions: ExceptionArgs, times: int) -> RetryRetFunc:
     def decorator(func: DecoratorFunc) -> InnerFunc:
         def innerfunc(**kwargs: RetryKwArgs) -> None:
             attempt = 1
-            while attempt <= times:
+            while attempt < times:
                 try:
                     return func(**kwargs)  # type: ignore
                 except exceptions:  # type: ignore

@@ -42,7 +42,8 @@ line-length = 120
 env = [
   "DOWNLOAD_PATH=tests/download",
   "CONVERTED_PATH=tests/converted",
-  "VIDEOS_TEXT_FILE=tests/example.txt"
+  "VIDEOS_TEXT_FILE=tests/example.txt",
+  "LOG_FILE_PATH=tests/logs/log_test.log"
 ]
 testpaths = [
   "tests",
