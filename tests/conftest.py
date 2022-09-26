@@ -4,14 +4,17 @@ import pytest
 import os
 
 from typing import Generator
-from helper import delete_file, is_valid_video_file
+from helper import delete_file
 
 DOWNLOAD_PATH = os.environ.get("DOWNLOAD_PATH", "download")
 CONVERTED_PATH = os.environ.get("CONVERTED_PATH", "converted")
 LOG_FILE_PATH = os.environ.get("LOG_FILE_PATH", "logs/log_test.log")
 
+
 def get_download_files() -> list[str]:
-    return [f"{DOWNLOAD_PATH}/{file}" for file in os.listdir(DOWNLOAD_PATH) if is_valid_video_file(file.split("/")[-1])]
+    return [
+        f"{DOWNLOAD_PATH}/{file}" for file in os.listdir(DOWNLOAD_PATH) if file.split("/")[-1].split(".")[-1] == "mp4"
+    ]
 
 
 def get_converted_files() -> list[str]:

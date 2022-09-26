@@ -5,6 +5,8 @@ import requests
 import ffmpeg
 import validators
 from requests import Response
+from pathlib import Path
+from urllib import parse
 from tqdm import tqdm
 
 from config import load_env
@@ -19,11 +21,11 @@ VIDEOS_TEXT_FILE = os.environ.get("VIDEOS_TEXT_FILE", "example.txt")
 
 
 def get_downloaded_videos() -> list[str]:
-    return os.listdir(DOWNLOAD_PATH)
+    return [file for file in os.listdir(DOWNLOAD_PATH) if Path(file).suffix == ".mp4"]
 
 
-def get_converted_videos() -> list[str]:
-    return os.listdir(CONVERTED_PATH)
+def get_converted_videos() -> list[Path]:
+    return [res for res in Path(CONVERTED_PATH).glob("**/*.mp3") if res.is_file()]
 
 
 def delete_file(file_path: str) -> None:
@@ -34,10 +36,6 @@ def delete_file(file_path: str) -> None:
         logger.warning(f"(%s) %s is failed to %s.", current_state, file_name, current_state.lower())
         print(f"Deleting {file_path!r}...")
         os.remove(file_path)
-
-
-def is_valid_video_file(file: str) -> bool:
-    return file.split(".")[-1] == "mp4"
 
 
 def convert_to_url(line: str) -> str:
@@ -59,11 +57,11 @@ def get_all_video_urls_from_text_file() -> list[str]:
 
 def remove_already_proceeded_videos(video_list: list[str], directory_path: str) -> list[str]:
     fixed_videos_list = []
-    proceeded_videos = set(os.listdir(directory_path))
+    proceeded_videos = set(res for res in Path(directory_path).glob("**/*.mp4") if res.is_file())
 
     for video in video_list:
-        video_name = video.split("/")[-1]
-        if is_valid_video_file(video_name) and video_name not in proceeded_videos:
+        video_name = os.path.basename(parse.urlsplit(video).path)
+        if directory_path / Path(video_name) not in proceeded_videos:
             fixed_videos_list.append(video)
 
     return fixed_videos_list
@@ -74,7 +72,7 @@ def get_response(video_url: str) -> Response:
 
 
 def save_video(file_name: str, response: Response) -> None:
-    output_file_path = os.path.join(DOWNLOAD_PATH, file_name)
+    output_file_path = DOWNLOAD_PATH / Path(file_name)
     size = int(response.headers.get("Content-Length", "0"))
     progress_bar = tqdm(total=size)
     chunk_size = 10_000
@@ -89,15 +87,16 @@ def save_video(file_name: str, response: Response) -> None:
 
 
 def convert_mp4_to_mp3(file_name: str, overwrite: bool, quiet: bool) -> None:  # pragma: no cover
-    output_file = file_name.replace("mp4", "mp3")
+    orginal_file_path = Path(file_name)
+    output_file = orginal_file_path.with_suffix(".mp3")
 
-    if not overwrite and output_file in get_converted_videos():
+    if not overwrite and CONVERTED_PATH / output_file in get_converted_videos():
         return
 
-    input_file_path = os.path.join(DOWNLOAD_PATH, file_name)
-    output_file_path = os.path.join(CONVERTED_PATH, output_file)
+    input_file_path = DOWNLOAD_PATH / orginal_file_path
+    output_file_path = CONVERTED_PATH / output_file
     video = ffmpeg.input(input_file_path)
-    audio = ffmpeg.output(video.audio, output_file_path)
+    audio = ffmpeg.output(video.audio, str(output_file_path))
     ffmpeg.run(audio, overwrite_output=True, quiet=quiet)
 
     logger.info(f"(CONVERT) %s is converted successfully.", file_name)
