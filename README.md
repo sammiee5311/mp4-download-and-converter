@@ -1,5 +1,5 @@
 # mp4 download and converter
-[![CI](https://github.com/sammiee5311/mp4-download-and-converter/actions/workflows/CI.yaml/badge.svg)](https://github.com/sammiee5311/mp4-download-and-converter/actions/workflows/CI.yaml) [![python](./python-version.svg)]() [![](./coverage.svg)]()
+[![CI](https://github.com/sammiee5311/mp4-download-and-converter/actions/workflows/CI.yaml/badge.svg)](https://github.com/sammiee5311/mp4-download-and-converter/actions/workflows/CI.yaml) [![python](./python-version.svg)]() [![](./coverage.svg?dummy=8484744)]()
 
 download all the `mp4` videos from urls and convert from `mp4` to `mp3`.
 
