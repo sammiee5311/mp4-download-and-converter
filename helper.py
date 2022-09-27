@@ -8,6 +8,7 @@ from requests import Response
 from pathlib import Path
 from urllib import parse
 from tqdm import tqdm
+from typing import Union, no_type_check
 
 from config import load_env
 from mp4_type import ExceptionArgs, RetryRetFunc, DecoratorFunc, InnerFunc, RetryKwArgs
@@ -20,22 +21,25 @@ CONVERTED_PATH = os.environ.get("CONVERTED_PATH", "converted")
 VIDEOS_TEXT_FILE = os.environ.get("VIDEOS_TEXT_FILE", "example.txt")
 
 
-def get_downloaded_videos() -> list[str]:
-    return [file for file in os.listdir(DOWNLOAD_PATH) if Path(file).suffix == ".mp4"]
+def get_downloaded_videos() -> list[Path]:
+    return [res for res in Path(DOWNLOAD_PATH).glob("**/*.mp4") if res.is_file()]
 
 
 def get_converted_videos() -> list[Path]:
     return [res for res in Path(CONVERTED_PATH).glob("**/*.mp3") if res.is_file()]
 
 
-def delete_file(file_path: str) -> None:
-    file_name = file_path.split("/")[-1]
-    current_state = "DOWNLOAD" if file_name[-3:] == "mp4" else "CONVERT"
+def get_video_name_from_url(url: str) -> str:
+    return os.path.basename(parse.urlsplit(url).path)
 
-    if os.path.exists(file_path):
-        logger.warning(f"(%s) %s is failed to %s.", current_state, file_name, current_state.lower())
-        print(f"Deleting {file_path!r}...")
-        os.remove(file_path)
+
+def delete_file(file_path: Path) -> None:
+    current_state = "DOWNLOAD" if file_path.suffix == ".mp4" else "CONVERT"
+
+    if file_path.exists():
+        logger.warning(f"(%s) %s is failed to %s.", current_state, file_path.name, current_state.lower())
+        print(f"Deleting {file_path.name!r}...")
+        file_path.unlink()
 
 
 def convert_to_url(line: str) -> str:
@@ -54,15 +58,21 @@ def get_all_video_urls_from_text_file() -> list[str]:
 
     return video_urls
 
-
-def remove_already_proceeded_videos(video_list: list[str], directory_path: str) -> list[str]:
-    fixed_videos_list = []
+@no_type_check
+def remove_already_proceeded_videos(
+    video_list: Union[list[str], list[Path]], directory_path: str
+) -> Union[list[str], list[Path]]:
+    fixed_videos_list: Union[list[str], list[Path]] = []
     proceeded_videos = set(res for res in Path(directory_path).glob("**/*.mp4") if res.is_file())
 
     for video in video_list:
-        video_name = os.path.basename(parse.urlsplit(video).path)
-        if directory_path / Path(video_name) not in proceeded_videos:
-            fixed_videos_list.append(video)
+        if isinstance(video, str):
+            video_name = get_video_name_from_url(video)
+            if directory_path / Path(video_name) not in proceeded_videos:
+                fixed_videos_list.append(video)
+        else:
+            if directory_path / Path(video.name) not in proceeded_videos:
+                fixed_videos_list.append(video)
 
     return fixed_videos_list
 
@@ -71,8 +81,8 @@ def get_response(video_url: str) -> Response:
     return requests.get(video_url, stream=True)
 
 
-def save_video(file_name: str, response: Response) -> None:
-    output_file_path = DOWNLOAD_PATH / Path(file_name)
+def save_video(file_name: Path, response: Response) -> None:
+    output_file_path = DOWNLOAD_PATH / file_name
     size = int(response.headers.get("Content-Length", "0"))
     progress_bar = tqdm(total=size)
     chunk_size = 10_000
@@ -83,7 +93,7 @@ def save_video(file_name: str, response: Response) -> None:
             if chunk:
                 file.write(chunk)
 
-    logger.info(f"(DOWNLOAD) %s is saved successfully.", file_name)
+    logger.info(f"(DOWNLOAD) %s is saved successfully.", str(file_name))
 
 
 def convert_mp4_to_mp3(file_name: str, overwrite: bool, quiet: bool) -> None:  # pragma: no cover

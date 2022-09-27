@@ -6,11 +6,13 @@ import click
 import os
 
 from config import ReteyError
+from pathlib import Path
 
 from helper import (
     get_all_video_urls_from_text_file,
     remove_already_proceeded_videos,
     save_video,
+    get_video_name_from_url,
     get_downloaded_videos,
     get_response,
     delete_file,
@@ -42,18 +44,18 @@ def download_videos() -> None:
     try:
         for idx, video_url in enumerate(video_urls):
             print(f"Proceeding {video_url!r} ({idx + 1}/{number_of_videos})...")
-            file_name = video_url.split("/")[-1]
+            video_file = Path(get_video_name_from_url(video_url))
             response = get_response(video_url)
-            save_video(file_name, response)
+            save_video(video_file, response)
 
         print("All done !")
     except Exception as e:
-        delete_file(os.path.join(DOWNLOAD_PATH, file_name))
+        delete_file(DOWNLOAD_PATH / video_file)
 
-        raise ReteyError(f"An error is occurred to download {file_name!r} file. ({e})")
+        raise ReteyError(f"An error is occurred to download {video_file!r} file. ({e})")
     except KeyboardInterrupt:
         print(f"Ctrl-C interrupted !")
-        delete_file(os.path.join(DOWNLOAD_PATH, file_name))
+        delete_file(DOWNLOAD_PATH / video_file)
 
 
 @click.command("convert")
@@ -70,16 +72,16 @@ def convert_videos(overwrite: bool, quiet: bool) -> None:
     try:
         for idx, video_file in enumerate(video_files):
             print(f"Proceeding {video_file!r} ({idx + 1}/{number_of_videos})...")
-            convert_mp4_to_mp3(video_file, overwrite, quiet)
+            convert_mp4_to_mp3(video_file.name, overwrite, quiet)
 
         print("All done !")
     except Exception as e:
-        delete_file(os.path.join(CONVERTED_PATH, video_file.replace("mp4", "mp3")))
+        delete_file(CONVERTED_PATH / video_file.with_suffix(".mp3"))
 
         raise ReteyError(f"An error is occurred to convert {video_file!r} file. ({e})")
     except KeyboardInterrupt:
         print(f"Ctrl-C interrupted !")
-        delete_file(os.path.join(CONVERTED_PATH, video_file.replace("mp4", "mp3")))
+        delete_file(CONVERTED_PATH / video_file.with_suffix(".mp3"))
 
 
 @click.command("together")
@@ -96,21 +98,21 @@ def download_and_covert(overwrite: bool, quiet: bool) -> None:
     try:
         for idx, video_url in enumerate(video_urls):
             print(f"Proceeding {video_url!r} ({idx + 1}/{number_of_videos})...")
-            file_name = video_url.split("/")[-1]
+            video_file = Path(get_video_name_from_url(video_url))
             response = get_response(video_url)
-            save_video(file_name, response)
-            convert_mp4_to_mp3(file_name, overwrite, quiet)
+            save_video(video_file, response)
+            convert_mp4_to_mp3(video_file.name, overwrite, quiet)
 
         print("All done !")
     except Exception as e:
-        delete_file(os.path.join(DOWNLOAD_PATH, file_name))
-        delete_file(os.path.join(CONVERTED_PATH, file_name.replace("mp4", "mp3")))
+        delete_file(DOWNLOAD_PATH / video_file)
+        delete_file(CONVERTED_PATH / video_file.with_suffix(".mp3"))
 
-        raise ReteyError(f"An error is occurred with {file_name!r} file. ({e})")
+        raise ReteyError(f"An error is occurred with {video_file!r} file. ({e})")
     except KeyboardInterrupt:
         print(f"Ctrl-C interrupted !")
-        delete_file(os.path.join(DOWNLOAD_PATH, file_name))
-        delete_file(os.path.join(CONVERTED_PATH, file_name.replace("mp4", "mp3")))
+        delete_file(DOWNLOAD_PATH / video_file)
+        delete_file(CONVERTED_PATH / video_file.with_suffix(".mp3"))
 
 
 @click.command("one")
@@ -128,21 +130,21 @@ def download_and_covert_from_url_argument(url: str, overwrite: bool, quiet: bool
 
     try:
         print(f"Proceeding {video_url!r}...")
-        file_name = video_url.split("/")[-1]
+        video_file = Path(get_video_name_from_url(video_url))
         response = get_response(video_url)
-        save_video(file_name, response)
-        convert_mp4_to_mp3(file_name, overwrite, quiet)
+        save_video(video_file, response)
+        convert_mp4_to_mp3(video_file.name, overwrite, quiet)
 
         print("All done !")
     except Exception as e:
-        delete_file(os.path.join(DOWNLOAD_PATH, file_name))
-        delete_file(os.path.join(CONVERTED_PATH, file_name.replace("mp4", "mp3")))
+        delete_file(DOWNLOAD_PATH / video_file)
+        delete_file(CONVERTED_PATH / video_file.with_suffix(".mp3"))
 
-        raise ReteyError(f"An error is occurred with {file_name!r} file. ({e})")
+        raise ReteyError(f"An error is occurred with {video_file!r} file. ({e})")
     except KeyboardInterrupt:
         print(f"Ctrl-C interrupted !")
-        delete_file(os.path.join(DOWNLOAD_PATH, file_name))
-        delete_file(os.path.join(CONVERTED_PATH, file_name.replace("mp4", "mp3")))
+        delete_file(DOWNLOAD_PATH / video_file)
+        delete_file(CONVERTED_PATH / video_file.with_suffix(".mp3"))
 
 
 if __name__ == "__main__":  # pragma: no cover
