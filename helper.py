@@ -8,10 +8,9 @@ from requests import Response
 from pathlib import Path
 from urllib import parse
 from tqdm import tqdm
-from typing import Union, no_type_check
 
 from config import load_env
-from mp4_type import ExceptionArgs, RetryRetFunc, DecoratorFunc, InnerFunc, RetryKwArgs
+from mp4_type import ExceptionArgs, RetryRetFunc, DecoratorFunc, InnerFunc, RetryKwArgs, TPath
 from logs.logging import logger
 
 load_env()
@@ -58,11 +57,9 @@ def get_all_video_urls_from_text_file() -> list[str]:
 
     return video_urls
 
-@no_type_check
-def remove_already_proceeded_videos(
-    video_list: Union[list[str], list[Path]], directory_path: str
-) -> Union[list[str], list[Path]]:
-    fixed_videos_list: Union[list[str], list[Path]] = []
+
+def remove_already_proceeded_videos(video_list: list[TPath], directory_path: str) -> list[TPath]:
+    fixed_videos_list: list[TPath] = []
     proceeded_videos = set(res for res in Path(directory_path).glob("**/*.mp4") if res.is_file())
 
     for video in video_list:

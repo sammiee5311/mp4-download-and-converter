@@ -1,18 +1,20 @@
 import sys
 
-
 if sys.version_info >= (3, 8):
     from typing import TypedDict  # >=3.8
 else:
     from mypy_extensions import TypedDict  # <=3.7
 
-from typing import Callable, Union, Sequence, Type
+from typing import Callable, Union, Sequence, Type, TypeVar
+from pathlib import Path
 
 
 class RetryKwArgs(TypedDict):
     overwrite: bool
     url: str
 
+
+TPath = TypeVar("TPath", str, Path)
 
 DownloadFunc = Callable[[], None]
 ConvertFunc = Callable[[bool, bool], None]
