@@ -5,8 +5,11 @@ __version__ = "0.0.8"
 import click
 import os
 
+from requests.exceptions import ConnectionError, StreamConsumedError, ChunkedEncodingError, RequestException
 from config import ReteyError
+from ffmpeg._run import Error
 from pathlib import Path
+
 
 from helper import (
     get_all_video_urls_from_text_file,
@@ -25,6 +28,9 @@ from helper import (
 DOWNLOAD_PATH = os.environ.get("DOWNLOAD_PATH", "download")
 CONVERTED_PATH = os.environ.get("CONVERTED_PATH", "converted")
 MAX_RETRY_TIMES = int(os.environ.get("MAX_RETRY_TIMES", 3))
+
+DOWNLOAD_RETRY_EXCEPTIONS = (ConnectionError, StreamConsumedError, ChunkedEncodingError, RequestException)
+CONVERT_RETRY_EXCEPTIONS = Error
 
 
 @click.group()
@@ -49,10 +55,10 @@ def download_videos() -> None:
             save_video(video_file, response)
 
         print("All done !")
-    except Exception as e:
-        delete_file(DOWNLOAD_PATH / video_file)
-
+    except DOWNLOAD_RETRY_EXCEPTIONS as e:
         raise ReteyError(f"An error is occurred to download {video_file!r} file. ({e})")
+    except Exception:
+        delete_file(DOWNLOAD_PATH / video_file)
     except KeyboardInterrupt:
         print(f"Ctrl-C interrupted !")
         delete_file(DOWNLOAD_PATH / video_file)
@@ -75,10 +81,10 @@ def convert_videos(overwrite: bool, quiet: bool) -> None:
             convert_mp4_to_mp3(video_file.name, overwrite, quiet)
 
         print("All done !")
-    except Exception as e:
-        delete_file(CONVERTED_PATH / video_file.with_suffix(".mp3"))
-
+    except CONVERT_RETRY_EXCEPTIONS as e:
         raise ReteyError(f"An error is occurred to convert {video_file!r} file. ({e})")
+    except Exception:
+        delete_file(CONVERTED_PATH / video_file.with_suffix(".mp3"))
     except KeyboardInterrupt:
         print(f"Ctrl-C interrupted !")
         delete_file(CONVERTED_PATH / video_file.with_suffix(".mp3"))
@@ -104,11 +110,11 @@ def download_and_covert(overwrite: bool, quiet: bool) -> None:
             convert_mp4_to_mp3(video_file.name, overwrite, quiet)
 
         print("All done !")
-    except Exception as e:
+    except (DOWNLOAD_RETRY_EXCEPTIONS + CONVERT_RETRY_EXCEPTIONS) as e:
+        raise ReteyError(f"An error is occurred with {video_file!r} file. ({e})")
+    except Exception:
         delete_file(DOWNLOAD_PATH / video_file)
         delete_file(CONVERTED_PATH / video_file.with_suffix(".mp3"))
-
-        raise ReteyError(f"An error is occurred with {video_file!r} file. ({e})")
     except KeyboardInterrupt:
         print(f"Ctrl-C interrupted !")
         delete_file(DOWNLOAD_PATH / video_file)
@@ -136,11 +142,11 @@ def download_and_covert_from_url_argument(url: str, overwrite: bool, quiet: bool
         convert_mp4_to_mp3(video_file.name, overwrite, quiet)
 
         print("All done !")
-    except Exception as e:
+    except (DOWNLOAD_RETRY_EXCEPTIONS + CONVERT_RETRY_EXCEPTIONS) as e:
+        raise ReteyError(f"An error is occurred with {video_file!r} file. ({e})")
+    except Exception:
         delete_file(DOWNLOAD_PATH / video_file)
         delete_file(CONVERTED_PATH / video_file.with_suffix(".mp3"))
-
-        raise ReteyError(f"An error is occurred with {video_file!r} file. ({e})")
     except KeyboardInterrupt:
         print(f"Ctrl-C interrupted !")
         delete_file(DOWNLOAD_PATH / video_file)

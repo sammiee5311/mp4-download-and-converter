@@ -8,4 +8,4 @@ def load_env() -> None:
 
 
 class ReteyError(BaseException):
-    ...
+    """Retry Error"""
