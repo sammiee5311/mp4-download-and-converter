@@ -2,28 +2,19 @@
 
 __version__ = "0.0.8"
 
-import click
 import os
-
-from requests.exceptions import ConnectionError, StreamConsumedError, ChunkedEncodingError, RequestException
-from config import ReteyError
-from ffmpeg._run import Error
 from pathlib import Path
 
+import click
+from ffmpeg._run import Error
+from requests.exceptions import (ChunkedEncodingError, ConnectionError,
+                                 RequestException, StreamConsumedError)
 
-from helper import (
-    get_all_video_urls_from_text_file,
-    remove_already_proceeded_videos,
-    save_video,
-    get_video_name_from_url,
-    get_downloaded_videos,
-    get_response,
-    delete_file,
-    convert_mp4_to_mp3,
-    convert_to_url,
-    retry,
-)
-
+from config import ReteyError
+from helper import (convert_mp4_to_mp3, convert_to_url, delete_file,
+                    get_all_video_urls_from_text_file, get_downloaded_videos,
+                    get_response, get_video_name_from_url,
+                    remove_already_proceeded_videos, retry, save_video)
 
 DOWNLOAD_PATH = os.environ.get("DOWNLOAD_PATH", "download")
 CONVERTED_PATH = os.environ.get("CONVERTED_PATH", "converted")

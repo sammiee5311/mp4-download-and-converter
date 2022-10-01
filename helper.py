@@ -1,17 +1,19 @@
 from __future__ import annotations
 
 import os
-import requests
-import ffmpeg
-import validators
-from requests import Response
 from pathlib import Path
 from urllib import parse
+
+import ffmpeg
+import requests
+import validators
+from requests import Response
 from tqdm import tqdm
 
 from config import load_env
-from mp4_type import ExceptionArgs, RetryRetFunc, DecoratorFunc, InnerFunc, RetryKwArgs, TPath
 from logs.logging import logger
+from mp4_type import (DecoratorFunc, ExceptionArgs, InnerFunc, RetryKwArgs,
+                      RetryRetFunc, TPath)
 
 load_env()
 

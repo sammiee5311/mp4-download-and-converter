@@ -1,5 +1,5 @@
-import os
 import logging
+import os
 
 from config import load_env
 

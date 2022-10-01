@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-import pytest
 import os
-
-from typing import Generator
 from pathlib import Path
+from typing import Generator
+
+import pytest
+
 from helper import delete_file, get_converted_videos, get_downloaded_videos
 
 DOWNLOAD_PATH = os.environ.get("DOWNLOAD_PATH", "download")
