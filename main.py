@@ -48,7 +48,8 @@ def download_videos() -> None:
         print("All done !")
     except DOWNLOAD_RETRY_EXCEPTIONS as e:
         raise RetryError(f"An error is occurred to download {video_file!r} file. ({e})")
-    except Exception:
+    except Exception as e:
+        print(f"An error is occurred to download {video_file!r} file. ({e})")
         delete_file(DOWNLOAD_PATH / video_file)
     except KeyboardInterrupt:
         print(f"Ctrl-C interrupted !")
@@ -74,7 +75,8 @@ def convert_videos(overwrite: bool, quiet: bool) -> None:
         print("All done !")
     except CONVERT_RETRY_EXCEPTIONS as e:
         raise RetryError(f"An error is occurred to convert {video_file!r} file. ({e})")
-    except Exception:
+    except Exception as e:
+        print(f"An error is occurred to download {video_file!r} file. ({e})")
         delete_file(CONVERTED_PATH / video_file.with_suffix(".mp3"))
     except KeyboardInterrupt:
         print(f"Ctrl-C interrupted !")
@@ -103,7 +105,8 @@ def download_and_covert(overwrite: bool, quiet: bool) -> None:
         print("All done !")
     except (DOWNLOAD_RETRY_EXCEPTIONS + CONVERT_RETRY_EXCEPTIONS) as e:
         raise RetryError(f"An error is occurred with {video_file!r} file. ({e})")
-    except Exception:
+    except Exception as e:
+        print(f"An error is occurred to download {video_file!r} file. ({e})")
         delete_file(DOWNLOAD_PATH / video_file)
         delete_file(CONVERTED_PATH / video_file.with_suffix(".mp3"))
     except KeyboardInterrupt:
@@ -135,7 +138,8 @@ def download_and_covert_from_url_argument(url: str, overwrite: bool, quiet: bool
         print("All done !")
     except (DOWNLOAD_RETRY_EXCEPTIONS + CONVERT_RETRY_EXCEPTIONS) as e:
         raise RetryError(f"An error is occurred with {video_file!r} file. ({e})")
-    except Exception:
+    except Exception as e:
+        print(f"An error is occurred to download {video_file!r} file. ({e})")
         delete_file(DOWNLOAD_PATH / video_file)
         delete_file(CONVERTED_PATH / video_file.with_suffix(".mp3"))
     except KeyboardInterrupt:
