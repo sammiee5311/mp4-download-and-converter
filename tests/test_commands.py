@@ -1,13 +1,16 @@
 import os
 
 import mock
+import pytest
 import requests_mock
 from click.testing import CliRunner
+from requests.exceptions import ConnectionError
 
+from config import RetryError
 from helper import (get_all_video_urls_from_text_file, get_converted_videos,
                     get_downloaded_videos, get_video_name_from_url)
-from main import (convert_videos, download_and_covert_from_url_argument,
-                  download_videos)
+from main import (convert_videos, download_and_covert,
+                  download_and_covert_from_url_argument, download_videos)
 from tests.conftest import convert_mp4_to_mp3, get_test_files
 
 DOWNLOAD_PATH = os.environ.get("DOWNLOAD_PATH", "download")
@@ -50,6 +53,26 @@ def test_convert() -> None:
     assert sorted(test_converted_files) == sorted(converted_files)
 
 
+@mock.patch("main.convert_mp4_to_mp3", convert_mp4_to_mp3)
+def test_download_and_covert() -> None:
+    mock: requests_mock.Mocker
+    with requests_mock.Mocker() as mock:
+        video_urls_from_text_file = get_all_video_urls_from_text_file()
+        converted_files = []
+
+        for video_url in video_urls_from_text_file:
+            mock.get(video_url, text="data")
+            converted_files.append(get_video_name_from_url(video_url).replace("mp4", "mp3"))
+
+        runner = CliRunner()
+        result = runner.invoke(download_and_covert)
+
+        test_converted_files = [file.name for file in get_converted_videos()]
+
+        assert result.exit_code == 0
+        assert sorted(test_converted_files) == sorted(converted_files)
+
+
 def test_one_without_url_argument() -> None:
     runner = CliRunner()
     result = runner.invoke(download_and_covert_from_url_argument)
@@ -70,13 +93,11 @@ def test_one_with_url_argument() -> None:
         result = runner.invoke(download_and_covert_from_url_argument, args=["--url", video_url])
 
         file_name = get_video_name_from_url(video_url)
-
         test_download_files = [file.name for file in get_test_files()]
 
         assert file_name in test_download_files
 
         file_name = file_name.replace("mp4", "mp3")
-
         test_converted_files = [file.name for file in get_converted_videos()]
 
         assert result.exit_code == 0
