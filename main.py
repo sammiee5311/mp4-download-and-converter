@@ -10,7 +10,7 @@ from ffmpeg._run import Error
 from requests.exceptions import (ChunkedEncodingError, ConnectionError,
                                  RequestException, StreamConsumedError)
 
-from config import ReteyError
+from config import RetryError
 from helper import (convert_mp4_to_mp3, convert_to_url, delete_file,
                     get_all_video_urls_from_text_file, get_downloaded_videos,
                     get_response, get_video_name_from_url,
@@ -30,7 +30,7 @@ def cli() -> None:
 
 
 @click.command("download")
-@retry(exceptions=ReteyError, times=MAX_RETRY_TIMES)
+@retry(exceptions=RetryError, times=MAX_RETRY_TIMES)
 def download_videos() -> None:
     """download all the urls in the text file."""
     video_urls_from_text_file = get_all_video_urls_from_text_file()
@@ -47,7 +47,7 @@ def download_videos() -> None:
 
         print("All done !")
     except DOWNLOAD_RETRY_EXCEPTIONS as e:
-        raise ReteyError(f"An error is occurred to download {video_file!r} file. ({e})")
+        raise RetryError(f"An error is occurred to download {video_file!r} file. ({e})")
     except Exception:
         delete_file(DOWNLOAD_PATH / video_file)
     except KeyboardInterrupt:
@@ -58,7 +58,7 @@ def download_videos() -> None:
 @click.command("convert")
 @click.option("--overwrite/--no-overwrite", default=True, show_default=True, help="overwrite converted videos")
 @click.option("--quiet/--no-quiet", default=True, show_default=True, help="show ffmpg output log")
-@retry(exceptions=ReteyError, times=MAX_RETRY_TIMES)
+@retry(exceptions=RetryError, times=MAX_RETRY_TIMES)
 def convert_videos(overwrite: bool, quiet: bool) -> None:
     """convert all the downloaded videos from mp4 to mp3."""
     downloaded_videos = get_downloaded_videos()
@@ -73,7 +73,7 @@ def convert_videos(overwrite: bool, quiet: bool) -> None:
 
         print("All done !")
     except CONVERT_RETRY_EXCEPTIONS as e:
-        raise ReteyError(f"An error is occurred to convert {video_file!r} file. ({e})")
+        raise RetryError(f"An error is occurred to convert {video_file!r} file. ({e})")
     except Exception:
         delete_file(CONVERTED_PATH / video_file.with_suffix(".mp3"))
     except KeyboardInterrupt:
@@ -84,7 +84,7 @@ def convert_videos(overwrite: bool, quiet: bool) -> None:
 @click.command("together")
 @click.option("--overwrite/--no-overwrite", default=True, show_default=True, help="overwrite converted videos")
 @click.option("--quiet/--no-quiet", default=True, show_default=True, help="show ffmpg output log")
-@retry(exceptions=ReteyError, times=MAX_RETRY_TIMES)
+@retry(exceptions=RetryError, times=MAX_RETRY_TIMES)
 def download_and_covert(overwrite: bool, quiet: bool) -> None:
     """download all the urls and convert all the downloaded videos."""
     video_urls_from_text_file = get_all_video_urls_from_text_file()
@@ -102,7 +102,7 @@ def download_and_covert(overwrite: bool, quiet: bool) -> None:
 
         print("All done !")
     except (DOWNLOAD_RETRY_EXCEPTIONS + CONVERT_RETRY_EXCEPTIONS) as e:
-        raise ReteyError(f"An error is occurred with {video_file!r} file. ({e})")
+        raise RetryError(f"An error is occurred with {video_file!r} file. ({e})")
     except Exception:
         delete_file(DOWNLOAD_PATH / video_file)
         delete_file(CONVERTED_PATH / video_file.with_suffix(".mp3"))
@@ -116,7 +116,7 @@ def download_and_covert(overwrite: bool, quiet: bool) -> None:
 @click.option("--url", help="video url")
 @click.option("--overwrite/--no-overwrite", default=True, show_default=True, help="overwrite converted videos")
 @click.option("--quiet/--no-quiet", default=True, show_default=True, help="show ffmpg output log")
-@retry(exceptions=ReteyError, times=MAX_RETRY_TIMES)
+@retry(exceptions=RetryError, times=MAX_RETRY_TIMES)
 def download_and_covert_from_url_argument(url: str, overwrite: bool, quiet: bool) -> None:
     """download vid from url argument and convert the downloaded video."""
     if not url:
@@ -134,7 +134,7 @@ def download_and_covert_from_url_argument(url: str, overwrite: bool, quiet: bool
 
         print("All done !")
     except (DOWNLOAD_RETRY_EXCEPTIONS + CONVERT_RETRY_EXCEPTIONS) as e:
-        raise ReteyError(f"An error is occurred with {video_file!r} file. ({e})")
+        raise RetryError(f"An error is occurred with {video_file!r} file. ({e})")
     except Exception:
         delete_file(DOWNLOAD_PATH / video_file)
         delete_file(CONVERTED_PATH / video_file.with_suffix(".mp3"))
