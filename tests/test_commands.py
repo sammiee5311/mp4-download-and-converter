@@ -1,12 +1,9 @@
 import os
 
 import mock
-import pytest
 import requests_mock
 from click.testing import CliRunner
-from requests.exceptions import ConnectionError
 
-from config import RetryError
 from helper import (get_all_video_urls_from_text_file, get_converted_videos,
                     get_downloaded_videos, get_video_name_from_url)
 from main import (convert_videos, download_and_covert,
