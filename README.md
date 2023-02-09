@@ -31,6 +31,21 @@ download all the `mp4` videos from urls and convert from `mp4` to `mp3`.
 6. use `convert`, `download`, `together` or `one` command with `python main.py`
     - example : `python main.py convert`
 
+## how to test
+1. create virtual python environment
+    - `python -m venv venv`
+    - or `virtualenv venv -ppy< python version(ex, 310) >` (if you have installed virtualenv)
+2. activate python venv
+    - mac
+        - `source venv/bin/activate`
+    - window
+        - `./venv/Scripts/activate`
+    - linux
+        - `. venv/bin/activate`
+3. install tox dependency
+    - `pip install tox`
+4. use `tox` command
+
 ## command
 - download
     - download all the urls in the text file.
