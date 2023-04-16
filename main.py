@@ -7,14 +7,21 @@ from pathlib import Path
 
 import click
 from ffmpeg._run import Error
-from requests.exceptions import (ChunkedEncodingError, ConnectionError,
-                                 RequestException, StreamConsumedError)
+from requests.exceptions import ChunkedEncodingError, ConnectionError, RequestException, StreamConsumedError
 
 from config import RetryError
-from helper import (convert_mp4_to_mp3, convert_to_url, delete_file,
-                    get_all_video_urls_from_text_file, get_downloaded_videos,
-                    get_response, get_video_name_from_url,
-                    remove_already_proceeded_videos, retry, save_video)
+from helper import (
+    convert_mp4_to_mp3,
+    convert_to_url,
+    delete_file,
+    get_all_video_urls_from_text_file,
+    get_downloaded_videos,
+    get_response,
+    get_video_name_from_url,
+    remove_already_proceeded_videos,
+    retry,
+    save_video,
+)
 
 DOWNLOAD_PATH = os.environ.get("DOWNLOAD_PATH", "download")
 CONVERTED_PATH = os.environ.get("CONVERTED_PATH", "converted")

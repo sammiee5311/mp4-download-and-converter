@@ -4,11 +4,16 @@ import mock
 import requests_mock
 from click.testing import CliRunner
 
-from helper import (get_all_video_urls_from_text_file, get_converted_videos,
-                    get_downloaded_videos, get_video_name_from_url)
-from main import (convert_videos, download_and_covert,
-                  download_and_covert_from_url_argument, download_videos)
-from tests.conftest import convert_mp4_to_mp3, get_test_files
+from helper import get_all_video_urls_from_text_file
+from helper import get_converted_videos
+from helper import get_downloaded_videos
+from helper import get_video_name_from_url
+from main import convert_videos
+from main import download_and_covert
+from main import download_and_covert_from_url_argument
+from main import download_videos
+from tests.conftest import convert_mp4_to_mp3
+from tests.conftest import get_test_files
 
 DOWNLOAD_PATH = os.environ.get("DOWNLOAD_PATH", "download")
 CONVERTED_PATH = os.environ.get("CONVERTED_PATH", "convert")

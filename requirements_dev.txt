@@ -11,3 +11,4 @@ validators
 click
 requests-mock
 mock
+pre-commit

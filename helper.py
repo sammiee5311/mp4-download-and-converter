@@ -12,8 +12,12 @@ from tqdm import tqdm
 
 from config import load_env
 from logs.logging import logger
-from mp4_type import (DecoratorFunc, ExceptionArgs, InnerFunc, RetryKwArgs,
-                      RetryRetFunc, TPath)
+from mp4_type import DecoratorFunc
+from mp4_type import ExceptionArgs
+from mp4_type import InnerFunc
+from mp4_type import RetryKwArgs
+from mp4_type import RetryRetFunc
+from mp4_type import TPath
 
 load_env()
 
