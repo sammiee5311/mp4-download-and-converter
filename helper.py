@@ -79,10 +79,6 @@ def remove_already_proceeded_videos(video_list: list[TPath], directory_path: str
     return fixed_videos_list
 
 
-def get_response(video_url: str) -> httpx.Response:
-    return httpx.stream("GET", video_url, follow_redirects=True)
-
-
 def save_video(file_name: Path, video_url: str) -> None:
     output_file_path = DOWNLOAD_PATH / file_name
 
