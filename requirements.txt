@@ -1,7 +1,7 @@
-requests
 ffmpeg-python
 python-dotenv
 validators
 click
 tqdm
 mypy
+httpx

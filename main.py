@@ -7,7 +7,7 @@ from pathlib import Path
 
 import click
 from ffmpeg._run import Error
-from requests.exceptions import ChunkedEncodingError, ConnectionError, RequestException, StreamConsumedError
+from httpx import RequestError
 
 from config import RetryError
 from helper import (
@@ -16,7 +16,6 @@ from helper import (
     delete_file,
     get_all_video_urls_from_text_file,
     get_downloaded_videos,
-    get_response,
     get_video_name_from_url,
     remove_already_proceeded_videos,
     retry,
@@ -27,7 +26,7 @@ DOWNLOAD_PATH = os.environ.get("DOWNLOAD_PATH", "download")
 CONVERTED_PATH = os.environ.get("CONVERTED_PATH", "converted")
 MAX_RETRY_TIMES = int(os.environ.get("MAX_RETRY_TIMES", 3))
 
-DOWNLOAD_RETRY_EXCEPTIONS = (ConnectionError, StreamConsumedError, ChunkedEncodingError, RequestException)
+DOWNLOAD_RETRY_EXCEPTIONS = RequestError
 CONVERT_RETRY_EXCEPTIONS = Error
 
 
@@ -49,14 +48,13 @@ def download_videos() -> None:
         for idx, video_url in enumerate(video_urls):
             print(f"Proceeding {video_url!r} ({idx + 1}/{number_of_videos})...")
             video_file = Path(get_video_name_from_url(video_url))
-            response = get_response(video_url)
-            save_video(video_file, response)
+            save_video(video_file, video_url)
 
         print("All done !")
-    except DOWNLOAD_RETRY_EXCEPTIONS as e:
-        raise RetryError(f"An error is occurred to download {video_file!r} file. ({e})")
-    except Exception as e:
-        print(f"An error is occurred to download {video_file!r} file. ({e})")
+    except DOWNLOAD_RETRY_EXCEPTIONS as exc:
+        raise RetryError(f"An error is occurred to download {video_file!r} file. ({exc})")
+    except Exception as exc:
+        print(f"An error is occurred to download {video_file!r} file. ({exc})")
         delete_file(DOWNLOAD_PATH / video_file)
     except KeyboardInterrupt:
         print(f"Ctrl-C interrupted !")
@@ -80,10 +78,10 @@ def convert_videos(overwrite: bool, quiet: bool) -> None:
             convert_mp4_to_mp3(video_file.name, overwrite, quiet)
 
         print("All done !")
-    except CONVERT_RETRY_EXCEPTIONS as e:
-        raise RetryError(f"An error is occurred to convert {video_file!r} file. ({e})")
-    except Exception as e:
-        print(f"An error is occurred to download {video_file!r} file. ({e})")
+    except CONVERT_RETRY_EXCEPTIONS as exc:
+        raise RetryError(f"An error is occurred to convert {video_file!r} file. ({exc})")
+    except Exception as exc:
+        print(f"An error is occurred to download {video_file!r} file. ({exc})")
         delete_file(CONVERTED_PATH / video_file.with_suffix(".mp3"))
     except KeyboardInterrupt:
         print(f"Ctrl-C interrupted !")
@@ -105,15 +103,14 @@ def download_and_covert(overwrite: bool, quiet: bool) -> None:
         for idx, video_url in enumerate(video_urls):
             print(f"Proceeding {video_url!r} ({idx + 1}/{number_of_videos})...")
             video_file = Path(get_video_name_from_url(video_url))
-            response = get_response(video_url)
-            save_video(video_file, response)
+            save_video(video_file, video_url)
             convert_mp4_to_mp3(video_file.name, overwrite, quiet)
 
         print("All done !")
-    except (DOWNLOAD_RETRY_EXCEPTIONS + CONVERT_RETRY_EXCEPTIONS) as e:
-        raise RetryError(f"An error is occurred with {video_file!r} file. ({e})")
-    except Exception as e:
-        print(f"An error is occurred to download {video_file!r} file. ({e})")
+    except (DOWNLOAD_RETRY_EXCEPTIONS, CONVERT_RETRY_EXCEPTIONS) as exc:
+        raise RetryError(f"An error is occurred with {video_file!r} file. ({exc})")
+    except Exception as exc:
+        print(f"An error is occurred to download {video_file!r} file. ({exc})")
         delete_file(DOWNLOAD_PATH / video_file)
         delete_file(CONVERTED_PATH / video_file.with_suffix(".mp3"))
     except KeyboardInterrupt:
@@ -138,15 +135,14 @@ def download_and_covert_from_url_argument(url: str, overwrite: bool, quiet: bool
     try:
         print(f"Proceeding {video_url!r}...")
         video_file = Path(get_video_name_from_url(video_url))
-        response = get_response(video_url)
-        save_video(video_file, response)
+        save_video(video_file, video_url)
         convert_mp4_to_mp3(video_file.name, overwrite, quiet)
 
         print("All done !")
-    except (DOWNLOAD_RETRY_EXCEPTIONS + CONVERT_RETRY_EXCEPTIONS) as e:
-        raise RetryError(f"An error is occurred with {video_file!r} file. ({e})")
-    except Exception as e:
-        print(f"An error is occurred to download {video_file!r} file. ({e})")
+    except (DOWNLOAD_RETRY_EXCEPTIONS, CONVERT_RETRY_EXCEPTIONS) as exc:
+        raise RetryError(f"An error is occurred with {video_file!r} file. ({exc})")
+    except Exception as exc:
+        print(f"An error is occurred to download {video_file!r} file. ({exc})")
         delete_file(DOWNLOAD_PATH / video_file)
         delete_file(CONVERTED_PATH / video_file.with_suffix(".mp3"))
     except KeyboardInterrupt:
