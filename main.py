@@ -7,7 +7,7 @@ from pathlib import Path
 
 import click
 from ffmpeg._run import Error
-from httpx import RequestError
+from httpx import HTTPError
 
 from config import RetryError
 from helper import (
@@ -26,7 +26,7 @@ DOWNLOAD_PATH = os.environ.get("DOWNLOAD_PATH", "download")
 CONVERTED_PATH = os.environ.get("CONVERTED_PATH", "converted")
 MAX_RETRY_TIMES = int(os.environ.get("MAX_RETRY_TIMES", 3))
 
-DOWNLOAD_RETRY_EXCEPTIONS = RequestError
+DOWNLOAD_RETRY_EXCEPTIONS = HTTPError
 CONVERT_RETRY_EXCEPTIONS = Error
 
 
