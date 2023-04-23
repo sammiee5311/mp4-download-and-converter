@@ -6,8 +6,8 @@ from httpx import Response
 from respx.router import MockRouter
 
 from helper import get_all_video_urls_from_text_file
-from helper import get_converted_videos
-from helper import get_downloaded_videos
+from modules.convert import get_converted_videos
+from modules.download import get_downloaded_videos
 from helper import get_video_name_from_url
 from main import convert_videos
 from main import download_and_covert
