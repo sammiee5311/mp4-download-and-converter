@@ -15,7 +15,7 @@ from helper import delete_file
 from helper import get_video_name_from_url
 from helper import retry_download
 from logs.logging import logger
-from mp4_type import DownloadStatus
+from mp4_types import DownloadStatus
 
 load_env()
 
@@ -28,6 +28,15 @@ CONCURRENT_REQUEST = 3
 
 def get_downloaded_videos() -> list[Path]:
     return [res for res in Path(DOWNLOAD_PATH).glob("**/*.mp4") if res.is_file()]
+
+
+def report_download_status(download_status: Counter[DownloadStatus]) -> None:
+    print(
+        "All Done!\n"
+        f"{download_status[DownloadStatus.OK]} success to download\n"
+        f"{download_status[DownloadStatus.ERROR]} failed to download\n"
+        "Check the 'output.log' file to see more details."
+    )
 
 
 def save_video(output_file_path: Path, response: httpx.Response, is_concurrent: bool) -> None:
@@ -44,15 +53,6 @@ def save_video(output_file_path: Path, response: httpx.Response, is_concurrent: 
                 file.write(chunk)
 
 
-def report_download_status(download_status: Counter[DownloadStatus]) -> None:
-    print(
-        "All Done!\n"
-        f"{download_status[DownloadStatus.OK]} success to download\n"
-        f"{download_status[DownloadStatus.ERROR]} failed to download\n"
-        "Check the 'output.log' file to see more details."
-    )
-
-
 @retry_download(exceptions=httpx.HTTPStatusError, times=MAX_RETRY_TIMES)  # type: ignore
 def download_video(file_name: Path, video_url: str, is_concurrent: bool = False) -> DownloadStatus:
     output_file_path = DOWNLOAD_PATH / file_name
@@ -61,6 +61,8 @@ def download_video(file_name: Path, video_url: str, is_concurrent: bool = False)
         response.raise_for_status()
         save_video(output_file_path, response, is_concurrent)
         status = DownloadStatus.OK
+
+    logger.debug(f"(DOWNLOAD) %s has been downloaded successfully.", str(file_name))
 
     return status
 
@@ -100,9 +102,6 @@ def download_videos_con(video_urls: list[str]) -> None:
                 status = DownloadStatus.ERROR
                 delete_file(DOWNLOAD_PATH / file_name)
                 logger.error(f"An error is occurred to download {str(file_name)!r} file. ({error_msg})")
-
-            else:
-                logger.debug(f"(DOWNLOAD) %s is saved successfully.", str(file_name))
 
             download_status[status] += 1
 

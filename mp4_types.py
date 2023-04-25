@@ -24,6 +24,8 @@ class RetryArgs(TypedDict):
 TPath = TypeVar("TPath", str, Path)
 
 DownloadStatus = Enum("DownloadStatus", "OK NOT_FOUND ERROR")
+ConvertStatus = Enum("ConvertStatus", "OK ERROR")
+
 DownloadFunc = Callable[[], None]
 ConvertFunc = Callable[[bool, bool], None]
 DownloadConvertFunc = Callable[[str, bool, bool], None]

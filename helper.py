@@ -9,12 +9,12 @@ import validators
 
 from config import load_env
 from logs.logging import logger
-from mp4_type import DecoratorFunc
-from mp4_type import ExceptionArgs
-from mp4_type import InnerFunc
-from mp4_type import RetryKwArgs
-from mp4_type import RetryRetFunc
-from mp4_type import TPath
+from mp4_types import DecoratorFunc
+from mp4_types import ExceptionArgs
+from mp4_types import InnerFunc
+from mp4_types import RetryKwArgs
+from mp4_types import RetryRetFunc
+from mp4_types import TPath
 
 load_env()
 
