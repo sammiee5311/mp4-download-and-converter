@@ -13,7 +13,8 @@ from tqdm import tqdm
 from config import load_env
 from helper import delete_file
 from helper import get_video_name_from_url
-from helper import retry_download
+from helper import MAX_RETRY_TIMES
+from helper import retry_func
 from logs.logging import logger
 from mp4_types import DownloadStatus
 
@@ -21,8 +22,6 @@ load_env()
 
 
 DOWNLOAD_PATH = os.environ.get("DOWNLOAD_PATH", "download")
-MAX_RETRY_TIMES = int(os.environ.get("MAX_RETRY_TIMES", 3))
-
 CONCURRENT_REQUEST = 3
 
 
@@ -53,7 +52,7 @@ def save_video(output_file_path: Path, response: httpx.Response, is_concurrent: 
                 file.write(chunk)
 
 
-@retry_download(exceptions=httpx.HTTPStatusError, times=MAX_RETRY_TIMES)  # type: ignore
+@retry_func(exceptions=httpx.HTTPStatusError, times=MAX_RETRY_TIMES)  # type: ignore
 def download_video(file_name: Path, video_url: str, is_concurrent: bool = False) -> DownloadStatus:
     output_file_path = DOWNLOAD_PATH / file_name
 

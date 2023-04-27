@@ -20,6 +20,7 @@ load_env()
 
 
 VIDEOS_TEXT_FILE = os.environ.get("VIDEOS_TEXT_FILE", "example.txt")
+MAX_RETRY_TIMES = int(os.environ.get("MAX_RETRY_TIMES", 3))
 
 
 def retry(exceptions: ExceptionArgs, times: int) -> RetryRetFunc:
@@ -41,7 +42,7 @@ def retry(exceptions: ExceptionArgs, times: int) -> RetryRetFunc:
 
 
 @typing.no_type_check
-def retry_download(exceptions: ExceptionArgs, times: int):
+def retry_func(exceptions: ExceptionArgs, times: int):
     def decorator(func: DecoratorFunc):
         def innerfunc(*args, **kwargs):
             attempt = 1
