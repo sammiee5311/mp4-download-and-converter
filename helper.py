@@ -19,8 +19,11 @@ from mp4_types import TPath
 load_env()
 
 
+CONVERTED_PATH = os.environ.get("CONVERTED_PATH", "converted")
+DOWNLOAD_PATH = os.environ.get("DOWNLOAD_PATH", "download")
 VIDEOS_TEXT_FILE = os.environ.get("VIDEOS_TEXT_FILE", "example.txt")
 MAX_RETRY_TIMES = int(os.environ.get("MAX_RETRY_TIMES", 3))
+CONCURRENT_REQUEST = 3
 
 
 def retry(exceptions: ExceptionArgs, times: int) -> RetryRetFunc:

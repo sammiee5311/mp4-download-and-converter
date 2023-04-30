@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 from collections import Counter
 from concurrent.futures import as_completed
 from concurrent.futures import ThreadPoolExecutor
@@ -10,19 +9,14 @@ from pathlib import Path
 import httpx
 from tqdm import tqdm
 
-from config import load_env
+from helper import CONCURRENT_REQUEST
 from helper import delete_file
+from helper import DOWNLOAD_PATH
 from helper import get_video_name_from_url
 from helper import MAX_RETRY_TIMES
 from helper import retry_func
 from logs.logging import logger
 from mp4_types import DownloadStatus
-
-load_env()
-
-
-DOWNLOAD_PATH = os.environ.get("DOWNLOAD_PATH", "download")
-CONCURRENT_REQUEST = 3
 
 
 def get_downloaded_videos() -> list[Path]:
@@ -81,7 +75,7 @@ def download_videos_con(video_urls: list[str]) -> None:
         done_iter = tqdm(done_iter, total=len(video_urls))
 
         for future in done_iter:
-            file_name = to_do_map[future]
+            video_file_to_do: Path = to_do_map[future]
 
             try:
                 status = future.result()
@@ -92,15 +86,15 @@ def download_videos_con(video_urls: list[str]) -> None:
                 error_msg = f"{exc} {type(exc)}".strip()
             except KeyboardInterrupt:
                 logger.debug("Ctrl-C interrupted !")
-                delete_file(DOWNLOAD_PATH / file_name)
+                delete_file(DOWNLOAD_PATH / video_file_to_do)
                 break
             else:
                 error_msg = ""
 
             if error_msg:
                 status = DownloadStatus.ERROR
-                delete_file(DOWNLOAD_PATH / file_name)
-                logger.error(f"An error is occurred to download {str(file_name)!r} file. ({error_msg})")
+                delete_file(DOWNLOAD_PATH / video_file_to_do)
+                logger.error(f"An error is occurred to download {str(video_file_to_do)!r} file. ({error_msg})")
 
             download_status[status] += 1
 
