@@ -56,7 +56,7 @@ def retry_func(exceptions: ExceptionArgs, times: int):
                     print(f"Exception thrown when attemping to run {func}, attempt {attempt} of {times}")
 
                     attempt += 1
-            return func(**kwargs)
+            return func(*args, **kwargs)
 
         return innerfunc
 
