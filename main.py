@@ -57,32 +57,17 @@ def convert_videos(overwrite: bool, quiet: bool) -> None:
 @click.command("together")
 @click.option("--overwrite/--no-overwrite", default=True, show_default=True, help="overwrite converted videos")
 @click.option("--quiet/--no-quiet", default=True, show_default=True, help="show ffmpg output log")
-@retry(exceptions=RetryError, times=MAX_RETRY_TIMES)
 def download_and_covert(overwrite: bool, quiet: bool) -> None:
     """download all the urls and convert all the downloaded videos."""
     video_urls_from_text_file = get_all_video_urls_from_text_file()
-
     video_urls = remove_already_proceeded_videos(video_urls_from_text_file, DOWNLOAD_PATH)
-    number_of_videos = len(video_urls)
 
-    try:
-        for idx, video_url in enumerate(video_urls):
-            print(f"Proceeding {video_url!r} ({idx + 1}/{number_of_videos})...")
-            video_file = Path(get_video_name_from_url(video_url))
-            download_video(video_file, video_url)
-            convert_mp4_to_mp3(video_file, overwrite, quiet)
+    download_videos_con(video_urls)
 
-        print("All done !")
-    except (DOWNLOAD_RETRY_EXCEPTIONS, CONVERT_RETRY_EXCEPTIONS) as exc:
-        raise RetryError(f"An error is occurred with {video_file!r} file. ({exc})")
-    except Exception as exc:
-        print(f"An error is occurred to download {video_file!r} file. ({exc})")
-        delete_file(DOWNLOAD_PATH / video_file)
-        delete_file(CONVERTED_PATH / video_file.with_suffix(".mp3"))
-    except KeyboardInterrupt:
-        print(f"Ctrl-C interrupted !")
-        delete_file(DOWNLOAD_PATH / video_file)
-        delete_file(CONVERTED_PATH / video_file.with_suffix(".mp3"))
+    downloaded_videos = get_downloaded_videos()
+    video_files = remove_already_proceeded_videos(downloaded_videos, CONVERTED_PATH)
+
+    convert_mp4_to_mp3_con(video_files, overwrite, quiet)
 
 
 @click.command("one")

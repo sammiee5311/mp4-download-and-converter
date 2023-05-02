@@ -54,7 +54,7 @@ def test_convert() -> None:
     assert sorted(test_converted_files) == sorted(converted_files)
 
 
-@mock.patch("main.convert_mp4_to_mp3", convert_mp4_to_mp3)
+@mock.patch("modules.convert.convert_mp4_to_mp3", convert_mp4_to_mp3)
 def test_download_and_covert(respx_mock: MockRouter) -> None:
     video_urls_from_text_file = get_all_video_urls_from_text_file()
     converted_files = []
