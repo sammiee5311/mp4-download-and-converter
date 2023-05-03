@@ -9,16 +9,13 @@ import click
 from ffmpeg._run import Error
 from httpx import HTTPError
 
-from config import RetryError
-from modules.download import download_video, download_videos_con, get_downloaded_videos
-from modules.convert import convert_mp4_to_mp3, convert_mp4_to_mp3_con
+from modules.download import download_videos_con, get_downloaded_videos
+from modules.convert import convert_mp4_to_mp3_con
 from helper import (
     convert_to_url,
-    delete_file,
     get_all_video_urls_from_text_file,
     get_video_name_from_url,
     remove_already_proceeded_videos,
-    retry,
 )
 
 DOWNLOAD_PATH = os.environ.get("DOWNLOAD_PATH", "download")
@@ -74,7 +71,6 @@ def download_and_covert(overwrite: bool, quiet: bool) -> None:
 @click.option("--url", help="video url")
 @click.option("--overwrite/--no-overwrite", default=True, show_default=True, help="overwrite converted videos")
 @click.option("--quiet/--no-quiet", default=True, show_default=True, help="show ffmpg output log")
-@retry(exceptions=RetryError, times=MAX_RETRY_TIMES)
 def download_and_covert_from_url_argument(url: str, overwrite: bool, quiet: bool) -> None:
     """download vid from url argument and convert the downloaded video."""
     if not url:
@@ -82,24 +78,10 @@ def download_and_covert_from_url_argument(url: str, overwrite: bool, quiet: bool
         return
 
     video_url = convert_to_url(url)
+    video_file = DOWNLOAD_PATH / Path(get_video_name_from_url(video_url))
 
-    try:
-        print(f"Proceeding {video_url!r}...")
-        video_file = Path(get_video_name_from_url(video_url))
-        download_video(video_file, video_url)
-        convert_mp4_to_mp3(video_file, overwrite, quiet)
-
-        print("All done !")
-    except (DOWNLOAD_RETRY_EXCEPTIONS, CONVERT_RETRY_EXCEPTIONS) as exc:
-        raise RetryError(f"An error is occurred with {video_file!r} file. ({exc})")
-    except Exception as exc:
-        print(f"An error is occurred to download {video_file!r} file. ({exc})")
-        delete_file(DOWNLOAD_PATH / video_file)
-        delete_file(CONVERTED_PATH / video_file.with_suffix(".mp3"))
-    except KeyboardInterrupt:
-        print(f"Ctrl-C interrupted !")
-        delete_file(DOWNLOAD_PATH / video_file)
-        delete_file(CONVERTED_PATH / video_file.with_suffix(".mp3"))
+    download_videos_con([video_url])
+    convert_mp4_to_mp3_con([video_file], overwrite, quiet)
 
 
 if __name__ == "__main__":  # pragma: no cover

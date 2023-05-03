@@ -80,7 +80,7 @@ def test_one_without_url_argument() -> None:
     assert result.output == "Please, provide a url that you want to download.\n"
 
 
-@mock.patch("main.convert_mp4_to_mp3", convert_mp4_to_mp3)
+@mock.patch("modules.convert.convert_mp4_to_mp3", convert_mp4_to_mp3)
 def test_one_with_url_argument(respx_mock: MockRouter) -> None:
     video_url = "https://example-example.com/example-example.mp4"
 
@@ -96,6 +96,8 @@ def test_one_with_url_argument(respx_mock: MockRouter) -> None:
 
     file_name = file_name.replace("mp4", "mp3")
     test_converted_files = [file.name for file in get_converted_videos()]
+
+    print(result.stdout)
 
     assert result.exit_code == 0
     assert file_name in test_converted_files

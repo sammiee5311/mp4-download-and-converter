@@ -26,24 +26,6 @@ MAX_RETRY_TIMES = int(os.environ.get("MAX_RETRY_TIMES", 3))
 CONCURRENT_REQUEST = 3
 
 
-def retry(exceptions: ExceptionArgs, times: int) -> RetryRetFunc:
-    def decorator(func: DecoratorFunc) -> InnerFunc:
-        def innerfunc(**kwargs: RetryKwArgs) -> None:
-            attempt = 1
-            while attempt < times:
-                try:
-                    return func(**kwargs)  # type: ignore
-                except exceptions:  # type: ignore
-                    print(f"Exception thrown when attemping to run {func}, attempt {attempt} of {times}")
-
-                    attempt += 1
-            return func(**kwargs)  # type: ignore
-
-        return innerfunc  # type: ignore
-
-    return decorator
-
-
 @typing.no_type_check
 def retry_func(exceptions: ExceptionArgs, times: int):
     def decorator(func: DecoratorFunc):
