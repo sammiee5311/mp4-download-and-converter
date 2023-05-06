@@ -46,7 +46,7 @@ def save_video(output_file_path: Path, response: httpx.Response, is_concurrent: 
                 file.write(chunk)
 
 
-@retry_func(exceptions=httpx.HTTPStatusError, times=MAX_RETRY_TIMES)  # type: ignore
+@retry_func(exceptions=httpx.HTTPStatusError, times=MAX_RETRY_TIMES)
 def download_video(file_name: Path, video_url: str, is_concurrent: bool = False) -> DownloadStatus:
     output_file_path = DOWNLOAD_PATH / file_name
 

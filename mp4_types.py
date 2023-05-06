@@ -5,34 +5,44 @@ if sys.version_info >= (3, 8):
 else:
     from mypy_extensions import TypedDict  # <=3.7
 
+if sys.version_info < (3, 10):
+    from typing_extensions import ParamSpec, Concatenate  # <3.10
+else:
+    from typing import ParamSpec, Concatenate  # =3.10
+
 from pathlib import Path
 from enum import Enum
-from typing import Callable, Sequence, Type, TypeVar, Union
+import httpx
+import ffmpeg
+from typing import Callable, Type, TypeVar, Union
 
 
-class RetryKwArgs(TypedDict):
-    overwrite: bool
-    url: str
-
-
-class RetryArgs(TypedDict):
+class DownloadArgs(TypedDict):
     file_name: Path
     video_url: str
     is_concurrent: bool
 
 
-TPath = TypeVar("TPath", str, Path)
+class ConvertArgs(TypedDict):
+    video_file: Path
+    overwrite: bool
+    quiet: bool
+
 
 DownloadStatus = Enum("DownloadStatus", "OK NOT_FOUND ERROR")
 ConvertStatus = Enum("ConvertStatus", "OK EXIST ERROR")
 
-DownloadFunc = Callable[[], None]
-ConvertFunc = Callable[[bool, bool], None]
-DownloadConvertFunc = Callable[[str, bool, bool], None]
-DownloadVideoFunc = Callable[[Path, str, bool], DownloadStatus]
+TPath = TypeVar("TPath", str, Path)
+ParamType = ParamSpec("ParamType")
+RetType = TypeVar("RetType", DownloadStatus, ConvertStatus)
+OriginalFunc = Callable[ParamType, RetType]
+DecoratedFunc = Callable[Concatenate[Union[DownloadArgs, ConvertArgs], ParamType], RetType]
 
-InnerFunc = Callable[[RetryKwArgs], None]
-DecoratorFunc = Union[DownloadFunc, ConvertFunc, DownloadConvertFunc]
-RetryRetFunc = Callable[[DecoratorFunc], InnerFunc]
+DownloadVideoFunc = Callable[[DownloadArgs], DownloadStatus]
+ConvertVideoFunc = Callable[[ConvertArgs], ConvertStatus]
 
-ExceptionArgs = Union[Type[BaseException], Sequence[BaseException]]
+InnerFunc = Union[DownloadStatus, ConvertStatus]
+DecoratorFunc = Union[DownloadVideoFunc, ConvertVideoFunc]
+RetryRetFunc = Callable[[DecoratorFunc], DecoratorFunc]
+
+ExceptionArgs = Union[Type[httpx.HTTPStatusError], Type[ffmpeg.Error]]

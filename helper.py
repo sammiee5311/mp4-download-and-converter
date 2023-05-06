@@ -1,19 +1,17 @@
 from __future__ import annotations
 
 import os
-import typing
 from pathlib import Path
+from typing import Callable
 from urllib import parse
 
 import validators
 
 from config import load_env
 from logs.logging import logger
-from mp4_types import DecoratorFunc
 from mp4_types import ExceptionArgs
-from mp4_types import InnerFunc
-from mp4_types import RetryKwArgs
-from mp4_types import RetryRetFunc
+from mp4_types import ParamType
+from mp4_types import RetType
 from mp4_types import TPath
 
 load_env()
@@ -26,10 +24,11 @@ MAX_RETRY_TIMES = int(os.environ.get("MAX_RETRY_TIMES", 3))
 CONCURRENT_REQUEST = 3
 
 
-@typing.no_type_check
-def retry_func(exceptions: ExceptionArgs, times: int):
-    def decorator(func: DecoratorFunc):
-        def innerfunc(*args, **kwargs):
+def retry_func(
+    exceptions: ExceptionArgs, times: int
+) -> Callable[[Callable[ParamType, RetType]], Callable[ParamType, RetType]]:
+    def decorator(func: Callable[ParamType, RetType]) -> Callable[ParamType, RetType]:
+        def innerfunc(*args: ParamType.args, **kwargs: ParamType.kwargs) -> RetType:
             attempt = 1
             while attempt < times:
                 try:

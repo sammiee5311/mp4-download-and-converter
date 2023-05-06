@@ -47,7 +47,7 @@ def convert_video(convert_file: ConvertFile, quiet: bool) -> None:
     logger.debug(f"(CONVERT) %s has been converted successfully.", convert_file.name)
 
 
-@retry_func(exceptions=ffmpeg.Error, times=MAX_RETRY_TIMES)  # type: ignore
+@retry_func(exceptions=ffmpeg.Error, times=MAX_RETRY_TIMES)
 def convert_mp4_to_mp3(video_file: Path, overwrite: bool, quiet: bool) -> ConvertStatus:
     orginal_file_path = video_file
     output_file_path = CONVERTED_PATH / Path(orginal_file_path.with_suffix(".mp3").name)
